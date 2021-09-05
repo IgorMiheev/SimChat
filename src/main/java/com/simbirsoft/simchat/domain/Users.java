@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -33,7 +32,7 @@ public class Users {
 	@OneToMany(mappedBy = "message_owner")
 	private List<Message> messages;
 
-	@ManyToMany(targetEntity = Party.class, mappedBy = "users")
+	@OneToMany(targetEntity = Party.class, mappedBy = "users")
 	private Set<Party> party;
 
 	public Users() {

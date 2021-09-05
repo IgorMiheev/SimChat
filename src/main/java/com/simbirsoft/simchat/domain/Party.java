@@ -7,18 +7,20 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-
 @IdClass(PartyID.class)
 @Table(name = "Party")
 public class Party {
 
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	private Long id;
+
 	@Id
-	@ManyToMany(targetEntity = Users.class)
+	@ManyToOne(targetEntity = Users.class)
 	@JoinColumn(name = "user_id")
 	private Set<Users> users;
 
