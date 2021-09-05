@@ -1,28 +1,58 @@
 package com.simbirsoft.simchat.domain;
 
 import java.sql.Date;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+//used class name "Users" instead "User" because "user" - reserved name in PostgreSQL
 @Entity
+@Table(name = "Users")
 public class Users {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long user_id;
+
 	private String username;
 	private String password;
 	private String email;
 	private Boolean is_banned;
 	private Date ban_endtime;
 
-	// @OneToMany
-	// private Chat chat;
+	@OneToMany(mappedBy = "chat_owner")
+	private List<Chat> chats;
+
+	@OneToMany(mappedBy = "message_owner")
+	private List<Message> messages;
+
+	@ManyToMany(targetEntity = Party.class, mappedBy = "users")
+	private Set<Party> party;
 
 	public Users() {
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
+	}
+
+	public List<Chat> getChats() {
+		return chats;
+	}
+
+	public void setChats(List<Chat> chats) {
+		this.chats = chats;
 	}
 
 	public Long getUser_id() {
