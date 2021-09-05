@@ -1,31 +1,25 @@
 package com.simbirsoft.simchat.domain;
 
+import java.io.Serializable;
 import java.sql.Date;
-import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@IdClass(PartyID.class)
 @Table(name = "Party")
-public class Party {
-
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	private Long id;
+public class Party implements Serializable {
 
 	@Id
 	@ManyToOne(targetEntity = Users.class)
 	@JoinColumn(name = "user_id")
-	private Set<Users> users;
+	private Users users;
 
-	@ManyToOne
 	@Id
+	@ManyToOne
 	@JoinColumn(name = "chat_id")
 	private Chat chat;
 
@@ -33,6 +27,22 @@ public class Party {
 	private Date ban_endtime;
 
 	public Party() {
+	}
+
+	public Users getUsers() {
+		return users;
+	}
+
+	public void setUsers(Users users) {
+		this.users = users;
+	}
+
+	public Chat getChat() {
+		return chat;
+	}
+
+	public void setChat(Chat chat) {
+		this.chat = chat;
 	}
 
 	public int getStatus() {
@@ -49,14 +59,6 @@ public class Party {
 
 	public void setBan_endtime(Date ban_endtime) {
 		this.ban_endtime = ban_endtime;
-	}
-
-	public Set<Users> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Set<Users> users) {
-		this.users = users;
 	}
 
 }

@@ -1,9 +1,12 @@
 package com.simbirsoft.simchat.domain;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -14,6 +17,9 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long role_id;
 	private String name;
+
+	@OneToMany(mappedBy = "role")
+	private List<Access> access;
 
 	public Role() {
 	}

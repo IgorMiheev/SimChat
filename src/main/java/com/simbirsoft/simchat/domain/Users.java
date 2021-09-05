@@ -29,6 +29,9 @@ public class Users {
 	@OneToMany(mappedBy = "chat_owner")
 	private List<Chat> chats;
 
+	@OneToMany(mappedBy = "user_acc")
+	private List<Access> access;
+
 	@OneToMany(mappedBy = "message_owner")
 	private List<Message> messages;
 
