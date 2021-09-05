@@ -19,6 +19,9 @@ public class Users {
 	private Boolean is_banned;
 	private Date ban_endtime;
 
+	// @OneToMany
+	// private Chat chat;
+
 	public Users() {
 	}
 
