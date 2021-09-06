@@ -40,4 +40,12 @@ public class Role {
 		this.name = name;
 	}
 
+	public List<Access> getAccess() {
+		return access;
+	}
+
+	public void setAccess(List<Access> access) {
+		this.access = access;
+	}
+
 }

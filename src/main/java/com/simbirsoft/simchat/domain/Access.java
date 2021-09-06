@@ -22,4 +22,20 @@ public class Access implements Serializable {
 	@JoinColumn(name = "role_id")
 	private Role role;
 
+	public Users getUser() {
+		return user_acc;
+	}
+
+	public void setUser(Users user_acc) {
+		this.user_acc = user_acc;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
 }

@@ -41,6 +41,22 @@ public class Users {
 	public Users() {
 	}
 
+	public List<Access> getAccess() {
+		return access;
+	}
+
+	public void setAccess(List<Access> access) {
+		this.access = access;
+	}
+
+	public Set<Party> getParty() {
+		return party;
+	}
+
+	public void setParty(Set<Party> party) {
+		this.party = party;
+	}
+
 	public List<Message> getMessages() {
 		return messages;
 	}
