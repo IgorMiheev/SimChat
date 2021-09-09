@@ -25,17 +25,13 @@ public class Chat {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private Users chat_owner;
+	private Users user;
 
-	@OneToMany(mappedBy = "chat_messages")
+	@OneToMany(mappedBy = "chat")
 	private List<Message> messages;
 
 	@OneToMany(mappedBy = "chat")
 	private List<Party> partys;
-
-	public Users getChat_owner() {
-		return chat_owner;
-	}
 
 	public List<Party> getPartys() {
 		return partys;
@@ -43,10 +39,6 @@ public class Chat {
 
 	public void setPartys(List<Party> partys) {
 		this.partys = partys;
-	}
-
-	public void setChat_owner(Users chat_owner) {
-		this.chat_owner = chat_owner;
 	}
 
 	public List<Message> getMessages() {
@@ -82,6 +74,14 @@ public class Chat {
 
 	public void setChat_type(String chat_type) {
 		this.chat_type = chat_type;
+	}
+
+	public Users getUser() {
+		return user;
+	}
+
+	public void setUser(Users user) {
+		this.user = user;
 	}
 
 }

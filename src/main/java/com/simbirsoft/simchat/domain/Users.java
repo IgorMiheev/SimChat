@@ -26,16 +26,16 @@ public class Users {
 	private Boolean is_banned;
 	private Date ban_endtime;
 
-	@OneToMany(mappedBy = "chat_owner")
+	@OneToMany(mappedBy = "user")
 	private List<Chat> chats;
 
 	@OneToMany(mappedBy = "user")
 	private List<Access> access;
 
-	@OneToMany(mappedBy = "message_owner")
+	@OneToMany(mappedBy = "user")
 	private List<Message> messages;
 
-	@OneToMany(targetEntity = Party.class, mappedBy = "users")
+	@OneToMany(targetEntity = Party.class, mappedBy = "user")
 	private Set<Party> party;
 
 	public Users() {

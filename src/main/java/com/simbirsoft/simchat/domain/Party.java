@@ -21,7 +21,7 @@ public class Party {
 
 	@ManyToOne(targetEntity = Users.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private Users users;
+	private Users user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "chat_id")
@@ -33,12 +33,20 @@ public class Party {
 	public Party() {
 	}
 
-	public Users getUsers() {
-		return users;
+	public Long getParty_id() {
+		return party_id;
 	}
 
-	public void setUsers(Users users) {
-		this.users = users;
+	public void setParty_id(Long party_id) {
+		this.party_id = party_id;
+	}
+
+	public Users getUser() {
+		return user;
+	}
+
+	public void setUser(Users user) {
+		this.user = user;
 	}
 
 	public Chat getChat() {

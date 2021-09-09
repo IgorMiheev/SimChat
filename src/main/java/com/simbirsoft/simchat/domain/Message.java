@@ -24,11 +24,11 @@ public class Message {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private Users message_owner;
+	private Users user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "chat_id")
-	private Chat chat_messages;
+	private Chat chat;
 
 	public Message() {
 	}
@@ -65,20 +65,20 @@ public class Message {
 		this.create_date = create_date;
 	}
 
-	public Users getMessage_owner() {
-		return message_owner;
+	public Users getUser() {
+		return user;
 	}
 
-	public void setMessage_owner(Users message_owner) {
-		this.message_owner = message_owner;
+	public void setUser(Users user) {
+		this.user = user;
 	}
 
-	public Chat getChat_messages() {
-		return chat_messages;
+	public Chat getChat() {
+		return chat;
 	}
 
-	public void setChat_messages(Chat chat_messages) {
-		this.chat_messages = chat_messages;
+	public void setChat(Chat chat) {
+		this.chat = chat;
 	}
 
 }
