@@ -12,7 +12,7 @@ public class UsersDto {
 	private Boolean is_banned;
 	private Date ban_endtime;
 
-	public UsersDto convertToDto(Users user) {
+	public static UsersDto convertToDto(Users user) {
 		UsersDto usersDto = new UsersDto(user.getUser_id(), user.getUsername(), user.getPassword(), user.getEmail(),
 				user.getIs_banned(), user.getBan_endtime());
 		return usersDto;
