@@ -10,7 +10,7 @@ public class ChatDto {
 	private String chat_type;
 
 	public static ChatDto convertToDto(Chat chat) {
-		ChatDto chatDto = new ChatDto(chat.getChat_id(), chat.getName(), chat.getChat_owner().getUser_id(),
+		ChatDto chatDto = new ChatDto(chat.getChat_id(), chat.getName(), chat.getUser().getUser_id(),
 				chat.getChat_type());
 		return chatDto;
 	}
