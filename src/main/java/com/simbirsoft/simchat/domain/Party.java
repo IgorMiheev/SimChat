@@ -1,6 +1,5 @@
 package com.simbirsoft.simchat.domain;
 
-import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.Entity;
@@ -14,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Party")
-public class Party implements Serializable {
+public class Party {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
