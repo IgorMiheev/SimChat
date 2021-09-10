@@ -24,6 +24,15 @@ public class Role {
 	public Role() {
 	}
 
+	public Role(Long role_id, String name) {
+		this.role_id = role_id;
+		this.name = name;
+	}
+
+	public void update(String name) {
+		this.name = name;
+	}
+
 	public Long getRole_id() {
 		return role_id;
 	}
