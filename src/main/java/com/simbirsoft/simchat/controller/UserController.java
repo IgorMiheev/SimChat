@@ -24,7 +24,7 @@ public class UserController {
 	private UsersRepository usersRepository;
 
 	@PostMapping // Create
-	public ResponseEntity saveUser(@RequestBody UsersDto userDto) {
+	public ResponseEntity createUser(@RequestBody UsersDto userDto) {
 		try {
 			Users user = new Users(null, userDto.getUsername(), userDto.getPassword(), userDto.getEmail(),
 					userDto.getIs_banned(), userDto.getBan_endtime());
