@@ -41,6 +41,15 @@ public class Users {
 	public Users() {
 	}
 
+	public Users(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+		this.user_id = user_id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.is_banned = is_banned;
+		this.ban_endtime = ban_endtime;
+	}
+
 	public List<Access> getAccess() {
 		return access;
 	}

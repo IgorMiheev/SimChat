@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simbirsoft.simchat.domain.Users;
 import com.simbirsoft.simchat.domain.dto.UsersDto;
-import com.simbirsoft.simchat.exception.UserAlreadyExistException;
-import com.simbirsoft.simchat.exception.UserNotExistException;
+import com.simbirsoft.simchat.exception.UserNotFoundException;
 import com.simbirsoft.simchat.repository.UsersRepository;
 
 @RestController
@@ -25,12 +24,11 @@ public class UserController {
 	private UsersRepository usersRepository;
 
 	@PostMapping // Create
-	public ResponseEntity saveUser(@RequestBody Users user) {
+	public ResponseEntity saveUser(@RequestBody UsersDto userDto) {
 		try {
-			if (usersRepository.findById(user.getUser_id()).orElse(null) == null) {
-				return ResponseEntity.ok(UsersDto.convertToDto(usersRepository.save(user)));
-			}
-			throw new UserAlreadyExistException("Пользователь с таким id уже существует");
+			Users user = new Users(null, userDto.getUsername(), userDto.getPassword(), userDto.getEmail(),
+					userDto.getIs_banned(), userDto.getBan_endtime());
+			return ResponseEntity.ok(UsersDto.convertToDto(usersRepository.save(user)));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -43,7 +41,7 @@ public class UserController {
 			if (user != null) {
 				return ResponseEntity.ok(UsersDto.convertToDto(user));
 			} else {
-				throw new UserNotExistException("Пользователя с таким id не существует");
+				throw new UserNotFoundException("Пользователь с таким id не найден");
 			}
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -51,12 +49,14 @@ public class UserController {
 	}
 
 	@PutMapping // Update
-	public ResponseEntity updateUser(@RequestBody Users user) {
+	public ResponseEntity updateUser(@RequestBody UsersDto userDto) {
 		try {
-			if (usersRepository.findById(user.getUser_id()).orElse(null) != null) {
+			if (usersRepository.findById(userDto.getUser_id()).orElse(null) != null) {
+				Users user = new Users(userDto.getUser_id(), userDto.getUsername(), userDto.getPassword(),
+						userDto.getEmail(), userDto.getIs_banned(), userDto.getBan_endtime());
 				return ResponseEntity.ok(UsersDto.convertToDto(usersRepository.save(user)));
 			}
-			throw new UserNotExistException("Пользователя с таким id не существует");
+			throw new UserNotFoundException("Пользователь с таким id не найден");
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -70,7 +70,7 @@ public class UserController {
 				usersRepository.delete(user);
 				return ResponseEntity.ok("Пользователь успешно удален");
 			} else {
-				throw new UserNotExistException("Пользователя с таким id не существует");
+				throw new UserNotFoundException("Пользователя с таким id не существует");
 			}
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
