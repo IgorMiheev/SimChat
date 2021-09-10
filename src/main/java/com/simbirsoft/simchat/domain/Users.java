@@ -50,6 +50,14 @@ public class Users {
 		this.ban_endtime = ban_endtime;
 	}
 
+	public void update(String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.is_banned = is_banned;
+		this.ban_endtime = ban_endtime;
+	}
+
 	public List<Access> getAccess() {
 		return access;
 	}

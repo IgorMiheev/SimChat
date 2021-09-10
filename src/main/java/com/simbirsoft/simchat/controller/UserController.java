@@ -50,10 +50,11 @@ public class UserController {
 
 	@PutMapping // Update
 	public ResponseEntity updateUser(@RequestBody UsersDto userDto) {
+		Users user = usersRepository.findById(userDto.getUser_id()).orElse(null);
 		try {
-			if (usersRepository.findById(userDto.getUser_id()).orElse(null) != null) {
-				Users user = new Users(userDto.getUser_id(), userDto.getUsername(), userDto.getPassword(),
-						userDto.getEmail(), userDto.getIs_banned(), userDto.getBan_endtime());
+			if (user != null) {
+				user.update(userDto.getUsername(), userDto.getPassword(), userDto.getEmail(), userDto.getIs_banned(),
+						userDto.getBan_endtime());
 				return ResponseEntity.ok(UsersDto.convertToDto(usersRepository.save(user)));
 			}
 			throw new UserNotFoundException("Пользователь с таким id не найден");

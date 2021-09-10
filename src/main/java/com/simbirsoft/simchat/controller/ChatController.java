@@ -61,10 +61,11 @@ public class ChatController {
 	@PutMapping // Update
 	public ResponseEntity updateChat(@RequestBody ChatDto chatDto) {
 		Users user = usersRepository.findById(chatDto.getUser_id()).orElse(null);
+		Chat chat = chatRepository.findById(chatDto.getChat_id()).orElse(null);
 		try {
-			if (chatRepository.findById(chatDto.getChat_id()).orElse(null) != null) {
+			if (chat != null) {
 				if (user != null) {
-					Chat chat = new Chat(chatDto.getChat_id(), chatDto.getName(), chatDto.getChat_type(), user);
+					chat.update(chatDto.getName(), chatDto.getChat_type(), user);
 					return ResponseEntity.ok(ChatDto.convertToDto(chatRepository.save(chat)));
 				} else {
 					throw new UserNotFoundException("Пользователь с таким id не найден");

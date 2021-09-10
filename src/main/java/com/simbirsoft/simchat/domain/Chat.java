@@ -40,8 +40,7 @@ public class Chat {
 		this.user = user;
 	}
 
-	public Chat(String name, String chat_type, Users user) {
-		this.chat_id = chat_id;
+	public void update(String name, String chat_type, Users user) {
 		this.name = name;
 		this.chat_type = chat_type;
 		this.user = user;
