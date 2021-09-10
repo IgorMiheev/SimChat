@@ -33,20 +33,26 @@ public class Chat {
 	@OneToMany(mappedBy = "chat")
 	private List<Party> partys;
 
+	public Chat(Long chat_id, String name, String chat_type, Users user) {
+		this.chat_id = chat_id;
+		this.name = name;
+		this.chat_type = chat_type;
+		this.user = user;
+	}
+
+	public Chat(String name, String chat_type, Users user) {
+		this.chat_id = chat_id;
+		this.name = name;
+		this.chat_type = chat_type;
+		this.user = user;
+	}
+
 	public List<Party> getPartys() {
 		return partys;
 	}
 
-	public void setPartys(List<Party> partys) {
-		this.partys = partys;
-	}
-
 	public List<Message> getMessages() {
 		return messages;
-	}
-
-	public void setMessages(List<Message> messages) {
-		this.messages = messages;
 	}
 
 	public Chat() {
