@@ -100,9 +100,9 @@ public class PartyController {
 		try {
 			if (party != null) {
 				partyRepository.delete(party);
-				return ResponseEntity.ok("Сообщение успешно удалено");
+				return ResponseEntity.ok("Участник чата успешно удален");
 			} else {
-				throw new PartyNotFoundException("Сообщение с таким id не найдено");
+				throw new PartyNotFoundException("Участник чата с таким id не найден");
 			}
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
