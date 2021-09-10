@@ -33,6 +33,23 @@ public class Message {
 	public Message() {
 	}
 
+	public Message(Long message_id, String content, int status, Date create_date, Users user, Chat chat) {
+		this.message_id = message_id;
+		this.content = content;
+		this.status = status;
+		this.create_date = create_date;
+		this.user = user;
+		this.chat = chat;
+	}
+
+	public void update(String content, int status, Date create_date, Users user, Chat chat) {
+		this.content = content;
+		this.status = status;
+		this.create_date = create_date;
+		this.user = user;
+		this.chat = chat;
+	}
+
 	public Long getMessage_id() {
 		return message_id;
 	}
