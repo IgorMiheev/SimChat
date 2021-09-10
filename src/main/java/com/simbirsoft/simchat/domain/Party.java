@@ -33,6 +33,21 @@ public class Party {
 	public Party() {
 	}
 
+	public Party(Long party_id, Users user, Chat chat, int status, Date ban_endtime) {
+		this.party_id = party_id;
+		this.user = user;
+		this.chat = chat;
+		this.status = status;
+		this.ban_endtime = ban_endtime;
+	}
+
+	public void update(Users user, Chat chat, int status, Date ban_endtime) {
+		this.user = user;
+		this.chat = chat;
+		this.status = status;
+		this.ban_endtime = ban_endtime;
+	}
+
 	public Long getParty_id() {
 		return party_id;
 	}
