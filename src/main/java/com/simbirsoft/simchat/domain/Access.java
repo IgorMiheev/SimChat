@@ -25,6 +25,18 @@ public class Access {
 	@JoinColumn(name = "role_id")
 	private Role role;
 
+	public Access(Long access_id, Users user, Role role) {
+		this.access_id = access_id;
+		this.user = user;
+		this.role = role;
+	}
+
+	public void update(Users user, Role role) {
+		this.access_id = access_id;
+		this.user = user;
+		this.role = role;
+	}
+
 	public Long getAccess_id() {
 		return access_id;
 	}
