@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.simbirsoft.simchat.domain.Role;
-import com.simbirsoft.simchat.domain.dto.RoleDto;
+import com.simbirsoft.simchat.domain.RoleEntity;
+import com.simbirsoft.simchat.domain.dto.Role;
 import com.simbirsoft.simchat.exception.RoleNotFoundException;
 import com.simbirsoft.simchat.repository.RoleRepository;
 
@@ -24,10 +24,10 @@ public class RoleController {
 	private RoleRepository roleRepository;
 
 	@PostMapping // Create
-	public ResponseEntity createRole(@RequestBody RoleDto roleDto) {
+	public ResponseEntity createRole(@RequestBody Role roleDto) {
 		try {
-			Role role = new Role(null, roleDto.getName());
-			return ResponseEntity.ok(RoleDto.convertToDto(roleRepository.save(role)));
+			RoleEntity role = new RoleEntity(null, roleDto.getName());
+			return ResponseEntity.ok(Role.convertToDto(roleRepository.save(role)));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -35,10 +35,10 @@ public class RoleController {
 
 	@GetMapping(params = "id") // Read
 	public ResponseEntity getRoleById(@RequestParam("id") Long role_id) {
-		Role role = roleRepository.findById(role_id).orElse(null);
+		RoleEntity role = roleRepository.findById(role_id).orElse(null);
 		try {
 			if (role != null) {
-				return ResponseEntity.ok(RoleDto.convertToDto(role));
+				return ResponseEntity.ok(Role.convertToDto(role));
 			} else {
 				throw new RoleNotFoundException("Роль с таким id не найдена");
 			}
@@ -48,12 +48,12 @@ public class RoleController {
 	}
 
 	@PutMapping // Update
-	public ResponseEntity updateRole(@RequestBody RoleDto roleDto) {
-		Role role = roleRepository.findById(roleDto.getRole_id()).orElse(null);
+	public ResponseEntity updateRole(@RequestBody Role roleDto) {
+		RoleEntity role = roleRepository.findById(roleDto.getRole_id()).orElse(null);
 		try {
 			if (role != null) {
 				role.update(roleDto.getName());
-				return ResponseEntity.ok(RoleDto.convertToDto(roleRepository.save(role)));
+				return ResponseEntity.ok(Role.convertToDto(roleRepository.save(role)));
 			}
 			throw new RoleNotFoundException("Роль с таким id не найдена");
 		} catch (Exception e) {
@@ -63,7 +63,7 @@ public class RoleController {
 
 	@DeleteMapping(params = "id") // Delete
 	public ResponseEntity deleteRoleById(@RequestParam("id") Long role_id) {
-		Role role = roleRepository.findById(role_id).orElse(null);
+		RoleEntity role = roleRepository.findById(role_id).orElse(null);
 		try {
 			if (role != null) {
 				roleRepository.delete(role);

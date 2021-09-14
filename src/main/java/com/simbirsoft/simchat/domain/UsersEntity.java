@@ -14,7 +14,7 @@ import javax.persistence.Table;
 //used class name "Users" instead "User" because "user" - reserved name in PostgreSQL
 @Entity
 @Table(name = "Users")
-public class Users {
+public class UsersEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,21 +27,21 @@ public class Users {
 	private Date ban_endtime;
 
 	@OneToMany(mappedBy = "user")
-	private List<Chat> chats;
+	private List<ChatEntity> chats;
 
 	@OneToMany(mappedBy = "user")
-	private List<Access> access;
+	private List<AccessEntity> access;
 
 	@OneToMany(mappedBy = "user")
-	private List<Message> messages;
+	private List<MessageEntity> messages;
 
-	@OneToMany(targetEntity = Party.class, mappedBy = "user")
-	private Set<Party> party;
+	@OneToMany(targetEntity = PartyEntity.class, mappedBy = "user")
+	private Set<PartyEntity> party;
 
-	public Users() {
+	public UsersEntity() {
 	}
 
-	public Users(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+	public UsersEntity(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
 		this.user_id = user_id;
 		this.username = username;
 		this.password = password;
@@ -58,35 +58,35 @@ public class Users {
 		this.ban_endtime = ban_endtime;
 	}
 
-	public List<Access> getAccess() {
+	public List<AccessEntity> getAccess() {
 		return access;
 	}
 
-	public void setAccess(List<Access> access) {
+	public void setAccess(List<AccessEntity> access) {
 		this.access = access;
 	}
 
-	public Set<Party> getParty() {
+	public Set<PartyEntity> getParty() {
 		return party;
 	}
 
-	public void setParty(Set<Party> party) {
+	public void setParty(Set<PartyEntity> party) {
 		this.party = party;
 	}
 
-	public List<Message> getMessages() {
+	public List<MessageEntity> getMessages() {
 		return messages;
 	}
 
-	public void setMessages(List<Message> messages) {
+	public void setMessages(List<MessageEntity> messages) {
 		this.messages = messages;
 	}
 
-	public List<Chat> getChats() {
+	public List<ChatEntity> getChats() {
 		return chats;
 	}
 
-	public void setChats(List<Chat> chats) {
+	public void setChats(List<ChatEntity> chats) {
 		this.chats = chats;
 	}
 

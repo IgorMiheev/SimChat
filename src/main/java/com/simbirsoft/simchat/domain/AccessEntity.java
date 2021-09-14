@@ -11,30 +11,30 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "AccessTable")
-public class Access {
+public class AccessEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long access_id;
 
-	@ManyToOne(targetEntity = Users.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = UsersEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private Users user;
+	private UsersEntity user;
 
-	@ManyToOne(targetEntity = Role.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = RoleEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
-	private Role role;
+	private RoleEntity role;
 
-	public Access() {
+	public AccessEntity() {
 	}
 
-	public Access(Long access_id, Users user, Role role) {
+	public AccessEntity(Long access_id, UsersEntity user, RoleEntity role) {
 		this.access_id = access_id;
 		this.user = user;
 		this.role = role;
 	}
 
-	public void update(Users user, Role role) {
+	public void update(UsersEntity user, RoleEntity role) {
 		this.user = user;
 		this.role = role;
 	}
@@ -47,19 +47,19 @@ public class Access {
 		this.access_id = access_id;
 	}
 
-	public Users getUser() {
+	public UsersEntity getUser() {
 		return user;
 	}
 
-	public void setUser(Users user) {
+	public void setUser(UsersEntity user) {
 		this.user = user;
 	}
 
-	public Role getRole() {
+	public RoleEntity getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(RoleEntity role) {
 		this.role = role;
 	}
 

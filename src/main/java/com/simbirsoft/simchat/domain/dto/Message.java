@@ -2,9 +2,9 @@ package com.simbirsoft.simchat.domain.dto;
 
 import java.sql.Date;
 
-import com.simbirsoft.simchat.domain.Message;
+import com.simbirsoft.simchat.domain.MessageEntity;
 
-public class MessageDto {
+public class Message {
 
 	private Long message_id;
 	private Long user_id;
@@ -13,13 +13,13 @@ public class MessageDto {
 	private Date create_date;
 	private int status;
 
-	public static MessageDto convertToDto(Message message) {
-		MessageDto messageDto = new MessageDto(message.getMessage_id(), message.getUser().getUser_id(),
+	public static Message convertToDto(MessageEntity message) {
+		Message messageDto = new Message(message.getMessage_id(), message.getUser().getUser_id(),
 				message.getChat().getChat_id(), message.getContent(), message.getCreate_date(), message.getStatus());
 		return messageDto;
 	}
 
-	public MessageDto(Long message_id, Long user_id, Long chat_id, String content, Date create_date, int status) {
+	public Message(Long message_id, Long user_id, Long chat_id, String content, Date create_date, int status) {
 		this.message_id = message_id;
 		this.user_id = user_id;
 		this.chat_id = chat_id;

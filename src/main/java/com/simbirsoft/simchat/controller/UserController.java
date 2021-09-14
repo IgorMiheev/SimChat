@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.simbirsoft.simchat.domain.Users;
-import com.simbirsoft.simchat.domain.dto.UsersDto;
+import com.simbirsoft.simchat.domain.UsersEntity;
+import com.simbirsoft.simchat.domain.dto.Users;
 import com.simbirsoft.simchat.exception.UserNotFoundException;
 import com.simbirsoft.simchat.repository.UsersRepository;
 
@@ -24,11 +24,11 @@ public class UserController {
 	private UsersRepository usersRepository;
 
 	@PostMapping // Create
-	public ResponseEntity createUser(@RequestBody UsersDto userDto) {
+	public ResponseEntity createUser(@RequestBody Users userDto) {
 		try {
-			Users user = new Users(null, userDto.getUsername(), userDto.getPassword(), userDto.getEmail(),
+			UsersEntity user = new UsersEntity(null, userDto.getUsername(), userDto.getPassword(), userDto.getEmail(),
 					userDto.getIs_banned(), userDto.getBan_endtime());
-			return ResponseEntity.ok(UsersDto.convertToDto(usersRepository.save(user)));
+			return ResponseEntity.ok(Users.convertToDto(usersRepository.save(user)));
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
@@ -36,10 +36,10 @@ public class UserController {
 
 	@GetMapping(params = "id") // Read
 	public ResponseEntity getUserById(@RequestParam("id") Long user_id) {
-		Users user = usersRepository.findById(user_id).orElse(null);
+		UsersEntity user = usersRepository.findById(user_id).orElse(null);
 		try {
 			if (user != null) {
-				return ResponseEntity.ok(UsersDto.convertToDto(user));
+				return ResponseEntity.ok(Users.convertToDto(user));
 			} else {
 				throw new UserNotFoundException("Пользователь с таким id не найден");
 			}
@@ -49,13 +49,13 @@ public class UserController {
 	}
 
 	@PutMapping // Update
-	public ResponseEntity updateUser(@RequestBody UsersDto userDto) {
-		Users user = usersRepository.findById(userDto.getUser_id()).orElse(null);
+	public ResponseEntity updateUser(@RequestBody Users userDto) {
+		UsersEntity user = usersRepository.findById(userDto.getUser_id()).orElse(null);
 		try {
 			if (user != null) {
 				user.update(userDto.getUsername(), userDto.getPassword(), userDto.getEmail(), userDto.getIs_banned(),
 						userDto.getBan_endtime());
-				return ResponseEntity.ok(UsersDto.convertToDto(usersRepository.save(user)));
+				return ResponseEntity.ok(Users.convertToDto(usersRepository.save(user)));
 			}
 			throw new UserNotFoundException("Пользователь с таким id не найден");
 		} catch (Exception e) {
@@ -65,7 +65,7 @@ public class UserController {
 
 	@DeleteMapping(params = "id") // Delete
 	public ResponseEntity deleteUser(@RequestParam("id") Long user_id) {
-		Users user = usersRepository.findById(user_id).orElse(null);
+		UsersEntity user = usersRepository.findById(user_id).orElse(null);
 		try {
 			if (user != null) {
 				usersRepository.delete(user);

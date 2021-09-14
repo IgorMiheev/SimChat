@@ -1,21 +1,21 @@
 package com.simbirsoft.simchat.domain.dto;
 
-import com.simbirsoft.simchat.domain.Chat;
+import com.simbirsoft.simchat.domain.ChatEntity;
 
-public class ChatDto {
+public class Chat {
 
 	private Long chat_id;
 	private String name;
 	private Long user_id;
 	private String chat_type;
 
-	public static ChatDto convertToDto(Chat chat) {
-		ChatDto chatDto = new ChatDto(chat.getChat_id(), chat.getName(), chat.getUser().getUser_id(),
+	public static Chat convertToDto(ChatEntity chat) {
+		Chat chatDto = new Chat(chat.getChat_id(), chat.getName(), chat.getUser().getUser_id(),
 				chat.getChat_type());
 		return chatDto;
 	}
 
-	public ChatDto(Long chat_id, String name, Long user_id, String chat_type) {
+	public Chat(Long chat_id, String name, Long user_id, String chat_type) {
 		this.chat_id = chat_id;
 		this.name = name;
 		this.user_id = user_id;

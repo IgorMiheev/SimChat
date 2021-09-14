@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Role")
-public class Role {
+public class RoleEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +19,12 @@ public class Role {
 	private String name;
 
 	@OneToMany(mappedBy = "role")
-	private List<Access> access;
+	private List<AccessEntity> access;
 
-	public Role() {
+	public RoleEntity() {
 	}
 
-	public Role(Long role_id, String name) {
+	public RoleEntity(Long role_id, String name) {
 		this.role_id = role_id;
 		this.name = name;
 	}
@@ -49,11 +49,11 @@ public class Role {
 		this.name = name;
 	}
 
-	public List<Access> getAccess() {
+	public List<AccessEntity> getAccess() {
 		return access;
 	}
 
-	public void setAccess(List<Access> access) {
+	public void setAccess(List<AccessEntity> access) {
 		this.access = access;
 	}
 

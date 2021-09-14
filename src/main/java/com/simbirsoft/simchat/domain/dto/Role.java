@@ -1,17 +1,17 @@
 package com.simbirsoft.simchat.domain.dto;
 
-import com.simbirsoft.simchat.domain.Role;
+import com.simbirsoft.simchat.domain.RoleEntity;
 
-public class RoleDto {
+public class Role {
 	private Long role_id;
 	private String name;
 
-	public static RoleDto convertToDto(Role role) {
-		RoleDto roleDto = new RoleDto(role.getRole_id(), role.getName());
+	public static Role convertToDto(RoleEntity role) {
+		Role roleDto = new Role(role.getRole_id(), role.getName());
 		return roleDto;
 	}
 
-	public RoleDto(Long role_id, String name) {
+	public Role(Long role_id, String name) {
 		this.role_id = role_id;
 		this.name = name;
 	}

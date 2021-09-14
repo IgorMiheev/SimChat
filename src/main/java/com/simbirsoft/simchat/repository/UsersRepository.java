@@ -3,9 +3,9 @@ package com.simbirsoft.simchat.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.simbirsoft.simchat.domain.Users;
+import com.simbirsoft.simchat.domain.UsersEntity;
 
 @Repository
-public interface UsersRepository extends JpaRepository<Users, Long> {
+public interface UsersRepository extends JpaRepository<UsersEntity, Long> {
 
 }

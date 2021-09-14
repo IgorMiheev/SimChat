@@ -13,27 +13,27 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Party")
-public class Party {
+public class PartyEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long party_id;
 
-	@ManyToOne(targetEntity = Users.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = UsersEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private Users user;
+	private UsersEntity user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "chat_id")
-	private Chat chat;
+	private ChatEntity chat;
 
 	private int status;
 	private Date ban_endtime;
 
-	public Party() {
+	public PartyEntity() {
 	}
 
-	public Party(Long party_id, Users user, Chat chat, int status, Date ban_endtime) {
+	public PartyEntity(Long party_id, UsersEntity user, ChatEntity chat, int status, Date ban_endtime) {
 		this.party_id = party_id;
 		this.user = user;
 		this.chat = chat;
@@ -41,7 +41,7 @@ public class Party {
 		this.ban_endtime = ban_endtime;
 	}
 
-	public void update(Users user, Chat chat, int status, Date ban_endtime) {
+	public void update(UsersEntity user, ChatEntity chat, int status, Date ban_endtime) {
 		this.user = user;
 		this.chat = chat;
 		this.status = status;
@@ -56,19 +56,19 @@ public class Party {
 		this.party_id = party_id;
 	}
 
-	public Users getUser() {
+	public UsersEntity getUser() {
 		return user;
 	}
 
-	public void setUser(Users user) {
+	public void setUser(UsersEntity user) {
 		this.user = user;
 	}
 
-	public Chat getChat() {
+	public ChatEntity getChat() {
 		return chat;
 	}
 
-	public void setChat(Chat chat) {
+	public void setChat(ChatEntity chat) {
 		this.chat = chat;
 	}
 

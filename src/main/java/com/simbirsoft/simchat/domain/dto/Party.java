@@ -2,22 +2,22 @@ package com.simbirsoft.simchat.domain.dto;
 
 import java.sql.Date;
 
-import com.simbirsoft.simchat.domain.Party;
+import com.simbirsoft.simchat.domain.PartyEntity;
 
-public class PartyDto {
+public class Party {
 	private Long party_id;
 	private Long chat_id;
 	private Long user_id;
 	private int status;
 	private Date ban_endtime;
 
-	public static PartyDto convertToDto(Party party) {
-		PartyDto partyDto = new PartyDto(party.getParty_id(), party.getChat().getChat_id(),
+	public static Party convertToDto(PartyEntity party) {
+		Party partyDto = new Party(party.getParty_id(), party.getChat().getChat_id(),
 				party.getUser().getUser_id(), party.getStatus(), party.getBan_endtime());
 		return partyDto;
 	}
 
-	public PartyDto(Long party_id, Long chat_id, Long user_id, int status, Date ban_endtime) {
+	public Party(Long party_id, Long chat_id, Long user_id, int status, Date ban_endtime) {
 		this.party_id = party_id;
 		this.chat_id = chat_id;
 		this.user_id = user_id;

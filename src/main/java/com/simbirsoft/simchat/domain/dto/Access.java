@@ -1,20 +1,20 @@
 package com.simbirsoft.simchat.domain.dto;
 
-import com.simbirsoft.simchat.domain.Access;
+import com.simbirsoft.simchat.domain.AccessEntity;
 
-public class AccessDto {
+public class Access {
 
 	private Long access_id;
 	private Long user_id;
 	private Long role_id;
 
-	public static AccessDto convertToDto(Access access) {
-		AccessDto accessDto = new AccessDto(access.getAccess_id(), access.getUser().getUser_id(),
+	public static Access convertToDto(AccessEntity access) {
+		Access accessDto = new Access(access.getAccess_id(), access.getUser().getUser_id(),
 				access.getRole().getRole_id());
 		return accessDto;
 	}
 
-	public AccessDto(Long access_id, Long user_id, Long role_id) {
+	public Access(Long access_id, Long user_id, Long role_id) {
 		this.access_id = access_id;
 		this.user_id = user_id;
 		this.role_id = role_id;

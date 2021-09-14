@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.simbirsoft.simchat.domain.Access;
-import com.simbirsoft.simchat.domain.Role;
-import com.simbirsoft.simchat.domain.Users;
-import com.simbirsoft.simchat.domain.dto.AccessDto;
+import com.simbirsoft.simchat.domain.AccessEntity;
+import com.simbirsoft.simchat.domain.RoleEntity;
+import com.simbirsoft.simchat.domain.UsersEntity;
+import com.simbirsoft.simchat.domain.dto.Access;
 import com.simbirsoft.simchat.exception.AccessNotFoundException;
 import com.simbirsoft.simchat.exception.RoleNotFoundException;
 import com.simbirsoft.simchat.exception.UserNotFoundException;
@@ -36,14 +36,14 @@ public class AccessController {
 	private AccessRepository accessRepository;
 
 	@PostMapping // Create
-	public ResponseEntity createAccess(@RequestBody AccessDto accessDto) {
-		Users user = usersRepository.findById(accessDto.getUser_id()).orElse(null);
-		Role role = roleRepository.findById(accessDto.getRole_id()).orElse(null);
+	public ResponseEntity createAccess(@RequestBody Access accessDto) {
+		UsersEntity user = usersRepository.findById(accessDto.getUser_id()).orElse(null);
+		RoleEntity role = roleRepository.findById(accessDto.getRole_id()).orElse(null);
 		try {
 			if (user != null) {
 				if (role != null) {
-					Access access = new Access(null, user, role);
-					return ResponseEntity.ok(AccessDto.convertToDto(accessRepository.save(access)));
+					AccessEntity access = new AccessEntity(null, user, role);
+					return ResponseEntity.ok(Access.convertToDto(accessRepository.save(access)));
 				} else {
 					throw new RoleNotFoundException("Роль с таким id не найдена");
 				}
@@ -57,10 +57,10 @@ public class AccessController {
 
 	@GetMapping(params = "id") // Read
 	public ResponseEntity getAccessById(@RequestParam("id") Long access_id) {
-		Access access = accessRepository.findById(access_id).orElse(null);
+		AccessEntity access = accessRepository.findById(access_id).orElse(null);
 		try {
 			if (access != null) {
-				return ResponseEntity.ok(AccessDto.convertToDto(access));
+				return ResponseEntity.ok(Access.convertToDto(access));
 			} else {
 				throw new AccessNotFoundException("Право доступа с таким id не найдено");
 			}
@@ -70,16 +70,16 @@ public class AccessController {
 	}
 
 	@PutMapping // Update
-	public ResponseEntity updateChat(@RequestBody AccessDto accessDto) {
-		Users user = usersRepository.findById(accessDto.getUser_id()).orElse(null);
-		Role role = roleRepository.findById(accessDto.getRole_id()).orElse(null);
-		Access access = accessRepository.findById(accessDto.getAccess_id()).orElse(null);
+	public ResponseEntity updateChat(@RequestBody Access accessDto) {
+		UsersEntity user = usersRepository.findById(accessDto.getUser_id()).orElse(null);
+		RoleEntity role = roleRepository.findById(accessDto.getRole_id()).orElse(null);
+		AccessEntity access = accessRepository.findById(accessDto.getAccess_id()).orElse(null);
 		try {
 			if (access != null) {
 				if (user != null) {
 					if (role != null) {
 						access.update(user, role);
-						return ResponseEntity.ok(AccessDto.convertToDto(accessRepository.save(access)));
+						return ResponseEntity.ok(Access.convertToDto(accessRepository.save(access)));
 					} else {
 						throw new RoleNotFoundException("Роль с таким id не найдена");
 					}
@@ -95,7 +95,7 @@ public class AccessController {
 
 	@DeleteMapping(params = "id") // Delete
 	public ResponseEntity deleteAccessById(@RequestParam("id") Long access_id) {
-		Access access = accessRepository.findById(access_id).orElse(null);
+		AccessEntity access = accessRepository.findById(access_id).orElse(null);
 		try {
 			if (access != null) {
 				accessRepository.delete(access);

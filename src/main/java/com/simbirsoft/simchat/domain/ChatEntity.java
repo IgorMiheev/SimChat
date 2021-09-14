@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Chat")
-public class Chat {
+public class ChatEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,36 +25,36 @@ public class Chat {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private Users user;
+	private UsersEntity user;
 
 	@OneToMany(mappedBy = "chat")
-	private List<Message> messages;
+	private List<MessageEntity> messages;
 
 	@OneToMany(mappedBy = "chat")
-	private List<Party> partys;
+	private List<PartyEntity> partys;
 
-	public Chat(Long chat_id, String name, String chat_type, Users user) {
+	public ChatEntity(Long chat_id, String name, String chat_type, UsersEntity user) {
 		this.chat_id = chat_id;
 		this.name = name;
 		this.chat_type = chat_type;
 		this.user = user;
 	}
 
-	public void update(String name, String chat_type, Users user) {
+	public void update(String name, String chat_type, UsersEntity user) {
 		this.name = name;
 		this.chat_type = chat_type;
 		this.user = user;
 	}
 
-	public List<Party> getPartys() {
+	public List<PartyEntity> getPartys() {
 		return partys;
 	}
 
-	public List<Message> getMessages() {
+	public List<MessageEntity> getMessages() {
 		return messages;
 	}
 
-	public Chat() {
+	public ChatEntity() {
 	}
 
 	public Long getChat_id() {
@@ -81,11 +81,11 @@ public class Chat {
 		this.chat_type = chat_type;
 	}
 
-	public Users getUser() {
+	public UsersEntity getUser() {
 		return user;
 	}
 
-	public void setUser(Users user) {
+	public void setUser(UsersEntity user) {
 		this.user = user;
 	}
 
