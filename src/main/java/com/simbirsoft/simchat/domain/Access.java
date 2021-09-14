@@ -35,7 +35,6 @@ public class Access {
 	}
 
 	public void update(Users user, Role role) {
-		this.access_id = access_id;
 		this.user = user;
 		this.role = role;
 	}
