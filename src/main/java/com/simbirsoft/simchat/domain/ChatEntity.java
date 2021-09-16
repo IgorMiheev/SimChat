@@ -25,7 +25,7 @@ public class ChatEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private UsersEntity user;
+	private UsrEntity user;
 
 	@OneToMany(mappedBy = "chat")
 	private List<MessageEntity> messages;
@@ -33,14 +33,14 @@ public class ChatEntity {
 	@OneToMany(mappedBy = "chat")
 	private List<PartyEntity> partys;
 
-	public ChatEntity(Long chat_id, String name, String chat_type, UsersEntity user) {
+	public ChatEntity(Long chat_id, String name, String chat_type, UsrEntity user) {
 		this.chat_id = chat_id;
 		this.name = name;
 		this.chat_type = chat_type;
 		this.user = user;
 	}
 
-	public void update(String name, String chat_type, UsersEntity user) {
+	public void update(String name, String chat_type, UsrEntity user) {
 		this.name = name;
 		this.chat_type = chat_type;
 		this.user = user;
@@ -81,11 +81,11 @@ public class ChatEntity {
 		this.chat_type = chat_type;
 	}
 
-	public UsersEntity getUser() {
+	public UsrEntity getUser() {
 		return user;
 	}
 
-	public void setUser(UsersEntity user) {
+	public void setUser(UsrEntity user) {
 		this.user = user;
 	}
 
