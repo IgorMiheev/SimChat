@@ -17,9 +17,9 @@ public class AccessEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long access_id;
 
-	@ManyToOne(targetEntity = UsersEntity.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = UsrEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private UsersEntity user;
+	private UsrEntity user;
 
 	@ManyToOne(targetEntity = RoleEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
@@ -28,13 +28,13 @@ public class AccessEntity {
 	public AccessEntity() {
 	}
 
-	public AccessEntity(Long access_id, UsersEntity user, RoleEntity role) {
+	public AccessEntity(Long access_id, UsrEntity user, RoleEntity role) {
 		this.access_id = access_id;
 		this.user = user;
 		this.role = role;
 	}
 
-	public void update(UsersEntity user, RoleEntity role) {
+	public void update(UsrEntity user, RoleEntity role) {
 		this.user = user;
 		this.role = role;
 	}
@@ -47,11 +47,11 @@ public class AccessEntity {
 		this.access_id = access_id;
 	}
 
-	public UsersEntity getUser() {
+	public UsrEntity getUser() {
 		return user;
 	}
 
-	public void setUser(UsersEntity user) {
+	public void setUser(UsrEntity user) {
 		this.user = user;
 	}
 
