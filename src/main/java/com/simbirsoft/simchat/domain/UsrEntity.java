@@ -14,7 +14,7 @@ import javax.persistence.Table;
 //used class name "Users" instead "User" because "user" - reserved name in PostgreSQL
 @Entity
 @Table(name = "Users")
-public class UsersEntity {
+public class UsrEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +38,10 @@ public class UsersEntity {
 	@OneToMany(targetEntity = PartyEntity.class, mappedBy = "user")
 	private Set<PartyEntity> party;
 
-	public UsersEntity() {
+	public UsrEntity() {
 	}
 
-	public UsersEntity(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+	public UsrEntity(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
 		this.user_id = user_id;
 		this.username = username;
 		this.password = password;

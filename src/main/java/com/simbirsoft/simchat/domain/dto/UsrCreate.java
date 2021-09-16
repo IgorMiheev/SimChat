@@ -2,37 +2,19 @@ package com.simbirsoft.simchat.domain.dto;
 
 import java.sql.Date;
 
-import com.simbirsoft.simchat.domain.UsersEntity;
-
-public class Users {
-	private Long user_id;
+public class UsrCreate {
 	private String username;
 	private String password;
 	private String email;
 	private Boolean is_banned;
 	private Date ban_endtime;
 
-	public static Users convertToDto(UsersEntity user) {
-		Users usersDto = new Users(user.getUser_id(), user.getUsername(), user.getPassword(), user.getEmail(),
-				user.getIs_banned(), user.getBan_endtime());
-		return usersDto;
-	}
-
-	public Users(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
-		this.user_id = user_id;
+	public UsrCreate(String username, String password, String email, Boolean is_banned, Date ban_endtime) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.is_banned = is_banned;
 		this.ban_endtime = ban_endtime;
-	}
-
-	public Long getUser_id() {
-		return user_id;
-	}
-
-	public void setUser_id(Long user_id) {
-		this.user_id = user_id;
 	}
 
 	public String getUsername() {
