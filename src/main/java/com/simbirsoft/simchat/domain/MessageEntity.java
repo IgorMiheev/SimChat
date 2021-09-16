@@ -24,7 +24,7 @@ public class MessageEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private UsersEntity user;
+	private UsrEntity user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "chat_id")
@@ -33,7 +33,7 @@ public class MessageEntity {
 	public MessageEntity() {
 	}
 
-	public MessageEntity(Long message_id, String content, int status, Date create_date, UsersEntity user, ChatEntity chat) {
+	public MessageEntity(Long message_id, String content, int status, Date create_date, UsrEntity user, ChatEntity chat) {
 		this.message_id = message_id;
 		this.content = content;
 		this.status = status;
@@ -42,7 +42,7 @@ public class MessageEntity {
 		this.chat = chat;
 	}
 
-	public void update(String content, int status, Date create_date, UsersEntity user, ChatEntity chat) {
+	public void update(String content, int status, Date create_date, UsrEntity user, ChatEntity chat) {
 		this.content = content;
 		this.status = status;
 		this.create_date = create_date;
@@ -82,11 +82,11 @@ public class MessageEntity {
 		this.create_date = create_date;
 	}
 
-	public UsersEntity getUser() {
+	public UsrEntity getUser() {
 		return user;
 	}
 
-	public void setUser(UsersEntity user) {
+	public void setUser(UsrEntity user) {
 		this.user = user;
 	}
 
