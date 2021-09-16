@@ -19,9 +19,9 @@ public class PartyEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long party_id;
 
-	@ManyToOne(targetEntity = UsersEntity.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = UsrEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
-	private UsersEntity user;
+	private UsrEntity user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "chat_id")
@@ -33,7 +33,7 @@ public class PartyEntity {
 	public PartyEntity() {
 	}
 
-	public PartyEntity(Long party_id, UsersEntity user, ChatEntity chat, int status, Date ban_endtime) {
+	public PartyEntity(Long party_id, UsrEntity user, ChatEntity chat, int status, Date ban_endtime) {
 		this.party_id = party_id;
 		this.user = user;
 		this.chat = chat;
@@ -41,7 +41,7 @@ public class PartyEntity {
 		this.ban_endtime = ban_endtime;
 	}
 
-	public void update(UsersEntity user, ChatEntity chat, int status, Date ban_endtime) {
+	public void update(UsrEntity user, ChatEntity chat, int status, Date ban_endtime) {
 		this.user = user;
 		this.chat = chat;
 		this.status = status;
@@ -56,11 +56,11 @@ public class PartyEntity {
 		this.party_id = party_id;
 	}
 
-	public UsersEntity getUser() {
+	public UsrEntity getUser() {
 		return user;
 	}
 
-	public void setUser(UsersEntity user) {
+	public void setUser(UsrEntity user) {
 		this.user = user;
 	}
 
