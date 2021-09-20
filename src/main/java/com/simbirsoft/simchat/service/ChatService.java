@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,21 @@ public class ChatService {
 		}
 
 		return mapper.toModel(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public java.util.List<Chat> getAll() throws ChatNotFoundException {
+		java.util.List<ChatEntity> entityList = repository.findAll();
+		java.util.List<Chat> resultList = new ArrayList<Chat>();
+
+		if (entityList.size() == 0) {
+			throw new ChatNotFoundException("Чаты не найдены");
+		}
+		for (ChatEntity entity : entityList) {
+			resultList.add(mapper.toModel(entity));
+		}
+
+		return resultList;
 	}
 
 	@Transactional

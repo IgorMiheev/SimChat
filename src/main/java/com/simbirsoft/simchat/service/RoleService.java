@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,21 @@ public class RoleService {
 		}
 
 		return mapper.toModel(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public java.util.List<Role> getAll() throws RoleNotFoundException {
+		java.util.List<RoleEntity> entityList = repository.findAll();
+		java.util.List<Role> resultList = new ArrayList<Role>();
+
+		if (entityList.size() == 0) {
+			throw new RoleNotFoundException("Роли не найдены");
+		}
+		for (RoleEntity entity : entityList) {
+			resultList.add(mapper.toModel(entity));
+		}
+
+		return resultList;
 	}
 
 }

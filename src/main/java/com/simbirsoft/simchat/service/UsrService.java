@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,21 @@ public class UsrService {
 		}
 
 		return mapper.toModel(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public java.util.List<Usr> getAll() throws UsrNotFoundException {
+		java.util.List<UsrEntity> entityList = repository.findAll();
+		java.util.List<Usr> resultList = new ArrayList<Usr>();
+
+		if (entityList.size() == 0) {
+			throw new UsrNotFoundException("Пользователи не найдены");
+		}
+		for (UsrEntity entity : entityList) {
+			resultList.add(mapper.toModel(entity));
+		}
+
+		return resultList;
 	}
 
 	@Transactional

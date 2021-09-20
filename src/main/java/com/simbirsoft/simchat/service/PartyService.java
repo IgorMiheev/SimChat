@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,21 @@ public class PartyService {
 		}
 
 		return mapper.toModel(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public java.util.List<Party> getAll() throws PartyNotFoundException {
+		java.util.List<PartyEntity> entityList = repository.findAll();
+		java.util.List<Party> resultList = new ArrayList<Party>();
+
+		if (entityList.size() == 0) {
+			throw new PartyNotFoundException("Участники чатов не найдены");
+		}
+		for (PartyEntity entity : entityList) {
+			resultList.add(mapper.toModel(entity));
+		}
+
+		return resultList;
 	}
 
 	@Transactional

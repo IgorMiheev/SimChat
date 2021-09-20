@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,21 @@ public class MessageService {
 		}
 
 		return mapper.toModel(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public java.util.List<Message> getAll() throws MessageNotFoundException {
+		java.util.List<MessageEntity> entityList = repository.findAll();
+		java.util.List<Message> resultList = new ArrayList<Message>();
+
+		if (entityList.size() == 0) {
+			throw new MessageNotFoundException("Сообщения не найдены");
+		}
+		for (MessageEntity entity : entityList) {
+			resultList.add(mapper.toModel(entity));
+		}
+
+		return resultList;
 	}
 
 	@Transactional

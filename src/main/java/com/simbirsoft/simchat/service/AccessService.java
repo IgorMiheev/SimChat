@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,21 @@ public class AccessService {
 		}
 
 		return mapper.toModel(entity);
+	}
+
+	@Transactional(readOnly = true)
+	public java.util.List<Access> getAll() throws AccessNotFoundException {
+		java.util.List<AccessEntity> entityList = repository.findAll();
+		java.util.List<Access> resultList = new ArrayList<Access>();
+
+		if (entityList.size() == 0) {
+			throw new AccessNotFoundException("Прав доступа не найдено");
+		}
+		for (AccessEntity entity : entityList) {
+			resultList.add(mapper.toModel(entity));
+		}
+
+		return resultList;
 	}
 
 	@Transactional
