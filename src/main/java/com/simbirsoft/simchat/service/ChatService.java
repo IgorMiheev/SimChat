@@ -13,6 +13,7 @@ import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.Chat;
 import com.simbirsoft.simchat.domain.dto.ChatCreate;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
+import com.simbirsoft.simchat.exception.ChatAlreadyExistException;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.repository.ChatRepository;
@@ -40,11 +41,16 @@ public class ChatService {
 	private PartyRepository partyRepository;
 
 	@Transactional
-	public Chat create(ChatCreate modelCreate) throws UsrNotFoundException {
+	public Chat create(ChatCreate modelCreate) throws UsrNotFoundException, ChatAlreadyExistException {
 		UsrEntity userEntity = usrRepository.findById(modelCreate.getUser_id()).orElse(null);
 
 		if (userEntity == null) {
 			throw new UsrNotFoundException("Пользователь с таким id не найден");
+		}
+
+		ChatEntity chatEntity = repository.findByName(modelCreate.getName());
+		if (chatEntity != null) {
+			throw new ChatAlreadyExistException("Чат с таким названием уже существует");
 		}
 
 		ChatEntity entity = mapper.toEntity(modelCreate);
