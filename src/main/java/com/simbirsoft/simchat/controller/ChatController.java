@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.simbirsoft.simchat.domain.dto.Chat;
 import com.simbirsoft.simchat.domain.dto.ChatCreate;
+import com.simbirsoft.simchat.exception.ChatAlreadyExistException;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.service.ChatService;
@@ -26,7 +27,7 @@ public class ChatController {
 	private ChatService service;
 
 	@PostMapping // Create
-	public Chat createChat(@RequestBody ChatCreate modelCreate) throws UsrNotFoundException {
+	public Chat createChat(@RequestBody ChatCreate modelCreate) throws UsrNotFoundException, ChatAlreadyExistException {
 		return service.create(modelCreate);
 	}
 
