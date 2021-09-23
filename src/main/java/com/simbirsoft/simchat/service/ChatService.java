@@ -1,5 +1,6 @@
 package com.simbirsoft.simchat.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +8,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.simbirsoft.simchat.domain.ChatEntity;
+import com.simbirsoft.simchat.domain.PartyEntity;
 import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.Chat;
 import com.simbirsoft.simchat.domain.dto.ChatCreate;
+import com.simbirsoft.simchat.domain.dto.PartyCreate;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.repository.ChatRepository;
+import com.simbirsoft.simchat.repository.PartyRepository;
 import com.simbirsoft.simchat.repository.UsrRepository;
 import com.simbirsoft.simchat.service.mapping.ChatMapper;
+import com.simbirsoft.simchat.service.mapping.PartyMapper;
 
 @Service
 public class ChatService {
@@ -23,10 +28,16 @@ public class ChatService {
 	ChatMapper mapper;
 
 	@Autowired
+	PartyMapper partyMapper;
+
+	@Autowired
 	private ChatRepository repository;
 
 	@Autowired
 	private UsrRepository usrRepository;
+
+	@Autowired
+	private PartyRepository partyRepository;
 
 	@Transactional
 	public Chat create(ChatCreate modelCreate) throws UsrNotFoundException {
@@ -38,6 +49,13 @@ public class ChatService {
 
 		ChatEntity entity = mapper.toEntity(modelCreate);
 		repository.save(entity);
+
+		// Автоматически добавляем создателя чата в таблицу Party
+		PartyCreate partyCreate = new PartyCreate(entity.getChat_id(), entity.getUser().getUser_id(), 0,
+				new Timestamp(0L));
+		PartyEntity party = partyMapper.toEntity(partyCreate);
+		partyRepository.save(party);
+
 		return mapper.toModel(entity);
 	}
 

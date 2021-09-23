@@ -1,6 +1,6 @@
 package com.simbirsoft.simchat.domain;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,12 +28,12 @@ public class PartyEntity {
 	private ChatEntity chat;
 
 	private int status;
-	private Date ban_endtime;
+	private Timestamp ban_endtime;
 
 	public PartyEntity() {
 	}
 
-	public PartyEntity(Long party_id, UsrEntity user, ChatEntity chat, int status, Date ban_endtime) {
+	public PartyEntity(Long party_id, UsrEntity user, ChatEntity chat, int status, Timestamp ban_endtime) {
 		this.party_id = party_id;
 		this.user = user;
 		this.chat = chat;
@@ -41,7 +41,7 @@ public class PartyEntity {
 		this.ban_endtime = ban_endtime;
 	}
 
-	public void update(UsrEntity user, ChatEntity chat, int status, Date ban_endtime) {
+	public void update(UsrEntity user, ChatEntity chat, int status, Timestamp ban_endtime) {
 		this.user = user;
 		this.chat = chat;
 		this.status = status;
@@ -80,11 +80,11 @@ public class PartyEntity {
 		this.status = status;
 	}
 
-	public Date getBan_endtime() {
+	public Timestamp getBan_endtime() {
 		return ban_endtime;
 	}
 
-	public void setBan_endtime(Date ban_endtime) {
+	public void setBan_endtime(Timestamp ban_endtime) {
 		this.ban_endtime = ban_endtime;
 	}
 

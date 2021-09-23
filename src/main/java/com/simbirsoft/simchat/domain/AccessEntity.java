@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.domain;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -7,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -17,7 +20,10 @@ public class AccessEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long access_id;
 
-	@ManyToOne(targetEntity = UsrEntity.class, fetch = FetchType.LAZY)
+	@Column(insertable = false, updatable = false, unique = true)
+	private Long user_id;
+
+	@OneToOne(targetEntity = UsrEntity.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
 	private UsrEntity user;
 

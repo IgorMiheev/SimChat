@@ -1,15 +1,15 @@
 package com.simbirsoft.simchat.domain.dto;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class UsrCreate {
 	private String username;
 	private String password;
 	private String email;
 	private Boolean is_banned;
-	private Date ban_endtime;
+	private Timestamp ban_endtime;
 
-	public UsrCreate(String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+	public UsrCreate(String username, String password, String email, Boolean is_banned, Timestamp ban_endtime) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
@@ -49,11 +49,11 @@ public class UsrCreate {
 		this.is_banned = is_banned;
 	}
 
-	public Date getBan_endtime() {
+	public Timestamp getBan_endtime() {
 		return ban_endtime;
 	}
 
-	public void setBan_endtime(Date ban_endtime) {
+	public void setBan_endtime(Timestamp ban_endtime) {
 		this.ban_endtime = ban_endtime;
 	}
 

@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,5 +47,16 @@ public class MessageController {
 	@DeleteMapping(params = "id") // Delete
 	public String deleteMessageById(@RequestParam("id") Long id) throws MessageNotFoundException {
 		return service.delete(id);
+	}
+
+	@GetMapping("/all")
+	public List<Message> getAll() throws MessageNotFoundException {
+		return service.getAll();
+	}
+
+	@GetMapping(path = "/all", params = "chat_id")
+	public List<Message> getAllbyChatId(@RequestParam("chat_id") Long chat_id)
+			throws MessageNotFoundException, ChatNotFoundException {
+		return service.getAllbyChatId(chat_id);
 	}
 }

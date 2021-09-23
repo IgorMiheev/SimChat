@@ -1,16 +1,16 @@
 package com.simbirsoft.simchat.domain.dto;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class MessageCreate {
 
 	private Long user_id;
 	private Long chat_id;
 	private String content;
-	private Date create_date;
+	private Timestamp create_date;
 	private int status;
 
-	public MessageCreate(Long user_id, Long chat_id, String content, Date create_date, int status) {
+	public MessageCreate(Long user_id, Long chat_id, String content, Timestamp create_date, int status) {
 		this.user_id = user_id;
 		this.chat_id = chat_id;
 		this.content = content;
@@ -42,11 +42,11 @@ public class MessageCreate {
 		this.content = content;
 	}
 
-	public Date getCreate_date() {
+	public Timestamp getCreate_date() {
 		return create_date;
 	}
 
-	public void setCreate_date(Date create_date) {
+	public void setCreate_date(Timestamp create_date) {
 		this.create_date = create_date;
 	}
 

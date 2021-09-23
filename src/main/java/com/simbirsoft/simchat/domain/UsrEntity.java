@@ -1,14 +1,16 @@
 package com.simbirsoft.simchat.domain;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 //used class name "Users" instead "User" because "user" - reserved name in PostgreSQL
@@ -20,17 +22,20 @@ public class UsrEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long user_id;
 
+	@Column(unique = true)
 	private String username;
 	private String password;
+
+	@Column(unique = true)
 	private String email;
 	private Boolean is_banned;
-	private Date ban_endtime;
+	private Timestamp ban_endtime;
 
 	@OneToMany(mappedBy = "user")
 	private List<ChatEntity> chats;
 
-	@OneToMany(mappedBy = "user")
-	private List<AccessEntity> access;
+	@OneToOne(mappedBy = "user")
+	private AccessEntity access;
 
 	@OneToMany(mappedBy = "user")
 	private List<MessageEntity> messages;
@@ -41,7 +46,8 @@ public class UsrEntity {
 	public UsrEntity() {
 	}
 
-	public UsrEntity(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+	public UsrEntity(Long user_id, String username, String password, String email, Boolean is_banned,
+			Timestamp ban_endtime) {
 		this.user_id = user_id;
 		this.username = username;
 		this.password = password;
@@ -50,7 +56,7 @@ public class UsrEntity {
 		this.ban_endtime = ban_endtime;
 	}
 
-	public void update(String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+	public void update(String username, String password, String email, Boolean is_banned, Timestamp ban_endtime) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
@@ -58,11 +64,11 @@ public class UsrEntity {
 		this.ban_endtime = ban_endtime;
 	}
 
-	public List<AccessEntity> getAccess() {
+	public AccessEntity getAccess() {
 		return access;
 	}
 
-	public void setAccess(List<AccessEntity> access) {
+	public void setAccess(AccessEntity access) {
 		this.access = access;
 	}
 
@@ -130,11 +136,11 @@ public class UsrEntity {
 		this.is_banned = is_banned;
 	}
 
-	public Date getBan_endtime() {
+	public Timestamp getBan_endtime() {
 		return ban_endtime;
 	}
 
-	public void setBan_endtime(Date ban_endtime) {
+	public void setBan_endtime(Timestamp ban_endtime) {
 		this.ban_endtime = ban_endtime;
 	}
 

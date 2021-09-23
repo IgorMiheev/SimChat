@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.simbirsoft.simchat.domain.dto.Party;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
+import com.simbirsoft.simchat.exception.PartyAlreadyExistException;
 import com.simbirsoft.simchat.exception.PartyNotFoundException;
 import com.simbirsoft.simchat.exception.RoleNotFoundException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
@@ -27,7 +30,7 @@ public class PartyController {
 
 	@PostMapping // Create
 	public Party createParty(@RequestBody PartyCreate modelCreate)
-			throws UsrNotFoundException, RoleNotFoundException, ChatNotFoundException {
+			throws UsrNotFoundException, RoleNotFoundException, ChatNotFoundException, PartyAlreadyExistException {
 		return service.create(modelCreate);
 	}
 
@@ -45,5 +48,17 @@ public class PartyController {
 	@DeleteMapping(params = "id") // Delete
 	public String deletePartyById(@RequestParam("id") Long id) throws PartyNotFoundException {
 		return service.delete(id);
+	}
+
+	@DeleteMapping(params = { "user_id", "chat_id" }) // Delete
+	public String deletePartyByUserIdAndChatId(@RequestParam("user_id") Long user_id,
+			@RequestParam("chat_id") Long chat_id)
+			throws PartyNotFoundException, ChatNotFoundException, UsrNotFoundException {
+		return service.deleteByUserAndChat(user_id, chat_id);
+	}
+
+	@GetMapping("/all")
+	public List<Party> getAll() throws PartyNotFoundException {
+		return service.getAll();
 	}
 }

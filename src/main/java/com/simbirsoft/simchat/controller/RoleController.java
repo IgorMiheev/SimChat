@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +22,10 @@ public class RoleController {
 	@GetMapping(params = "id") // Read
 	public Role getRoleById(@RequestParam("id") Long id) throws RoleNotFoundException {
 		return service.getById(id);
+	}
+
+	@GetMapping("/all")
+	public List<Role> getAll() throws RoleNotFoundException {
+		return service.getAll();
 	}
 }

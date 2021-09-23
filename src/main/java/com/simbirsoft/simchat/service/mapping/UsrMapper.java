@@ -1,6 +1,7 @@
 package com.simbirsoft.simchat.service.mapping;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import com.simbirsoft.simchat.domain.UsrEntity;
@@ -15,5 +16,8 @@ public abstract class UsrMapper {
 	public abstract UsrEntity toEntity(UsrCreate model);
 
 	public abstract UsrEntity updateEntity(UsrCreate model, @MappingTarget UsrEntity entity);
+
+	@Mapping(target = "user_id", ignore = true)
+	public abstract UsrEntity updateEntity(Usr model, @MappingTarget UsrEntity entity);
 
 }

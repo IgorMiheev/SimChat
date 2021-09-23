@@ -2,6 +2,7 @@ package com.simbirsoft.simchat.domain;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,6 +21,7 @@ public class ChatEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long chat_id;
 
+	@Column(unique = true)
 	private String name;
 	private String chat_type;
 

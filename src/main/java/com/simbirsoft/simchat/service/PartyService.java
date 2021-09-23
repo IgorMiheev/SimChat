@@ -12,6 +12,7 @@ import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.Party;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
+import com.simbirsoft.simchat.exception.PartyAlreadyExistException;
 import com.simbirsoft.simchat.exception.PartyNotFoundException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.repository.ChatRepository;
@@ -35,7 +36,8 @@ public class PartyService {
 	private ChatRepository chatRepository;
 
 	@Transactional
-	public Party create(PartyCreate modelCreate) throws UsrNotFoundException, ChatNotFoundException {
+	public Party create(PartyCreate modelCreate)
+			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException {
 		UsrEntity userEntity = usrRepository.findById(modelCreate.getUser_id()).orElse(null);
 		ChatEntity chatEntity = chatRepository.findById(modelCreate.getChat_id()).orElse(null);
 
@@ -44,6 +46,11 @@ public class PartyService {
 		}
 		if (chatEntity == null) {
 			throw new ChatNotFoundException("Чат с таким id не найден");
+		}
+
+		PartyEntity partyEntity = repository.findByUserAndChat(userEntity, chatEntity);
+		if (partyEntity != null) {
+			throw new PartyAlreadyExistException("Пользователь уже в чате");
 		}
 
 		PartyEntity entity = mapper.toEntity(modelCreate);
@@ -108,6 +115,28 @@ public class PartyService {
 		}
 
 		repository.delete(entity);
+		return new String("Участник чата успешно удален");
+	}
+
+	@Transactional
+	public String deleteByUserAndChat(Long user_id, Long chat_id)
+			throws PartyNotFoundException, ChatNotFoundException, UsrNotFoundException {
+		UsrEntity userEntity = usrRepository.findById(user_id).orElse(null);
+		ChatEntity chatEntity = chatRepository.findById(chat_id).orElse(null);
+
+		if (userEntity == null) {
+			throw new UsrNotFoundException("Пользователь с таким id не найден");
+		}
+		if (chatEntity == null) {
+			throw new ChatNotFoundException("Чат с таким id не найден");
+		}
+
+		PartyEntity partyEntity = repository.findByUserAndChat(userEntity, chatEntity);
+		if (partyEntity == null) {
+			throw new PartyNotFoundException("Пользователь отсутствует в чате");
+		}
+
+		repository.delete(partyEntity);
 		return new String("Участник чата успешно удален");
 	}
 

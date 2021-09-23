@@ -1,6 +1,6 @@
 package com.simbirsoft.simchat.domain;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,7 +20,7 @@ public class MessageEntity {
 	private Long message_id;
 	private String content;
 	private int status;
-	private Date create_date;
+	private Timestamp create_date;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -33,7 +33,8 @@ public class MessageEntity {
 	public MessageEntity() {
 	}
 
-	public MessageEntity(Long message_id, String content, int status, Date create_date, UsrEntity user, ChatEntity chat) {
+	public MessageEntity(Long message_id, String content, int status, Timestamp create_date, UsrEntity user,
+			ChatEntity chat) {
 		this.message_id = message_id;
 		this.content = content;
 		this.status = status;
@@ -42,7 +43,7 @@ public class MessageEntity {
 		this.chat = chat;
 	}
 
-	public void update(String content, int status, Date create_date, UsrEntity user, ChatEntity chat) {
+	public void update(String content, int status, Timestamp create_date, UsrEntity user, ChatEntity chat) {
 		this.content = content;
 		this.status = status;
 		this.create_date = create_date;
@@ -74,11 +75,11 @@ public class MessageEntity {
 		this.status = status;
 	}
 
-	public Date getCreate_date() {
+	public Timestamp getCreate_date() {
 		return create_date;
 	}
 
-	public void setCreate_date(Date create_date) {
+	public void setCreate_date(Timestamp create_date) {
 		this.create_date = create_date;
 	}
 

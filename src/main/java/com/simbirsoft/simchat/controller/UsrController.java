@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +25,7 @@ public class UsrController {
 	private UsrService service;
 
 	@PostMapping // Create
-	public Usr createUsr(@RequestBody UsrCreate modelCreate) throws UsrNotFoundException {
+	public Usr createUsr(@RequestBody UsrCreate modelCreate) throws Exception {
 		return service.create(modelCreate);
 	}
 
@@ -33,8 +35,7 @@ public class UsrController {
 	}
 
 	@PutMapping(params = "id") // Update
-	public Usr updateUsr(@RequestParam("id") Long id, @RequestBody UsrCreate modelCreate)
-			throws UsrNotFoundException, UsrNotFoundException {
+	public Usr updateUsr(@RequestParam("id") Long id, @RequestBody UsrCreate modelCreate) throws UsrNotFoundException {
 		return service.update(id, modelCreate);
 	}
 
@@ -43,31 +44,20 @@ public class UsrController {
 		return service.delete(id);
 	}
 
-	/*
-	 * 
-	 * @GetMapping(params = "id") // Read public ResponseEntity
-	 * getUserById(@RequestParam("id") Long user_id) { UsrEntity user =
-	 * usersRepository.findById(user_id).orElse(null); try { if (user != null) {
-	 * return ResponseEntity.ok(Usr.convertToDto(user)); } else { throw new
-	 * UsrNotFoundException("Пользователь с таким id не найден"); } } catch
-	 * (Exception e) { return ResponseEntity.badRequest().body(e.getMessage()); } }
-	 * 
-	 * @PutMapping // Update public ResponseEntity updateUser(@RequestBody Usr
-	 * userDto) { UsrEntity user =
-	 * usersRepository.findById(userDto.getUser_id()).orElse(null); try { if (user
-	 * != null) { user.update(userDto.getUsername(), userDto.getPassword(),
-	 * userDto.getEmail(), userDto.getIs_banned(), userDto.getBan_endtime()); return
-	 * ResponseEntity.ok(Usr.convertToDto(usersRepository.save(user))); } throw new
-	 * UsrNotFoundException("Пользователь с таким id не найден"); } catch (Exception
-	 * e) { return ResponseEntity.badRequest().body(e.getMessage()); } }
-	 * 
-	 * @DeleteMapping(params = "id") // Delete public ResponseEntity
-	 * deleteUser(@RequestParam("id") Long user_id) { UsrEntity user =
-	 * usersRepository.findById(user_id).orElse(null); try { if (user != null) {
-	 * usersRepository.delete(user); return
-	 * ResponseEntity.ok("Пользователь успешно удален"); } else { throw new
-	 * UsrNotFoundException("Пользователя с таким id не существует"); } } catch
-	 * (Exception e) { return ResponseEntity.badRequest().body(e.getMessage()); } }
-	 */
+	@GetMapping("/all")
+	public List<Usr> getAll() throws UsrNotFoundException {
+		return service.getAll();
+	}
+
+	@PutMapping(params = { "id", "ban_time" })
+	public Usr banUsr(@RequestParam("id") Long id, @RequestParam("ban_time") Long ban_time)
+			throws UsrNotFoundException {
+		return service.ban(id, ban_time);
+	}
+
+	@PutMapping(params = { "id", "unban" })
+	public Usr banUsr(@RequestParam("id") Long id) throws UsrNotFoundException {
+		return service.unBan(id);
+	}
 
 }

@@ -77,6 +77,27 @@ public class MessageService {
 		return resultList;
 	}
 
+	@Transactional(readOnly = true)
+	public java.util.List<Message> getAllbyChatId(Long chat_id) throws MessageNotFoundException, ChatNotFoundException {
+		ChatEntity chatEntity = chatRepository.findById(chat_id).orElse(null);
+
+		if (chatEntity == null) {
+			throw new ChatNotFoundException("Чат с таким id не найден");
+		}
+
+		java.util.List<MessageEntity> entityList = repository.findByChat(chatEntity);
+		java.util.List<Message> resultList = new ArrayList<Message>();
+
+		if (entityList.size() == 0) {
+			throw new MessageNotFoundException("Сообщения не найдены");
+		}
+		for (MessageEntity entity : entityList) {
+			resultList.add(mapper.toModel(entity));
+		}
+
+		return resultList;
+	}
+
 	@Transactional
 	public Message update(Long id, MessageCreate modelCreate)
 			throws UsrNotFoundException, MessageNotFoundException, ChatNotFoundException {

@@ -1,8 +1,6 @@
 package com.simbirsoft.simchat.domain.dto;
 
-import java.sql.Date;
-
-import com.simbirsoft.simchat.domain.MessageEntity;
+import java.sql.Timestamp;
 
 public class Message {
 
@@ -10,16 +8,10 @@ public class Message {
 	private Long user_id;
 	private Long chat_id;
 	private String content;
-	private Date create_date;
+	private Timestamp create_date;
 	private int status;
 
-	public static Message convertToDto(MessageEntity message) {
-		Message messageDto = new Message(message.getMessage_id(), message.getUser().getUser_id(),
-				message.getChat().getChat_id(), message.getContent(), message.getCreate_date(), message.getStatus());
-		return messageDto;
-	}
-
-	public Message(Long message_id, Long user_id, Long chat_id, String content, Date create_date, int status) {
+	public Message(Long message_id, Long user_id, Long chat_id, String content, Timestamp create_date, int status) {
 		this.message_id = message_id;
 		this.user_id = user_id;
 		this.chat_id = chat_id;
@@ -60,11 +52,11 @@ public class Message {
 		this.content = content;
 	}
 
-	public Date getCreate_date() {
+	public Timestamp getCreate_date() {
 		return create_date;
 	}
 
-	public void setCreate_date(Date create_date) {
+	public void setCreate_date(Timestamp create_date) {
 		this.create_date = create_date;
 	}
 

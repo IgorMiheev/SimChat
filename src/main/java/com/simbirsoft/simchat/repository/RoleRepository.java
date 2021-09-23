@@ -7,5 +7,4 @@ import com.simbirsoft.simchat.domain.RoleEntity;
 
 @Repository
 public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
-
 }

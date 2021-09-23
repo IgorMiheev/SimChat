@@ -1,8 +1,6 @@
 package com.simbirsoft.simchat.domain.dto;
 
-import java.sql.Date;
-
-import com.simbirsoft.simchat.domain.UsrEntity;
+import java.sql.Timestamp;
 
 public class Usr {
 	private Long user_id;
@@ -10,15 +8,9 @@ public class Usr {
 	private String password;
 	private String email;
 	private Boolean is_banned;
-	private Date ban_endtime;
+	private Timestamp ban_endtime;
 
-	public static Usr convertToDto(UsrEntity user) {
-		Usr usersDto = new Usr(user.getUser_id(), user.getUsername(), user.getPassword(), user.getEmail(),
-				user.getIs_banned(), user.getBan_endtime());
-		return usersDto;
-	}
-
-	public Usr(Long user_id, String username, String password, String email, Boolean is_banned, Date ban_endtime) {
+	public Usr(Long user_id, String username, String password, String email, Boolean is_banned, Timestamp ban_endtime) {
 		this.user_id = user_id;
 		this.username = username;
 		this.password = password;
@@ -67,11 +59,11 @@ public class Usr {
 		this.is_banned = is_banned;
 	}
 
-	public Date getBan_endtime() {
+	public Timestamp getBan_endtime() {
 		return ban_endtime;
 	}
 
-	public void setBan_endtime(Date ban_endtime) {
+	public void setBan_endtime(Timestamp ban_endtime) {
 		this.ban_endtime = ban_endtime;
 	}
 

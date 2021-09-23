@@ -7,5 +7,5 @@ import com.simbirsoft.simchat.domain.ChatEntity;
 
 @Repository
 public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
-
+	public ChatEntity findByName(String name);
 }

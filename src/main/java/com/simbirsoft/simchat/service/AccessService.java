@@ -13,6 +13,7 @@ import com.simbirsoft.simchat.domain.dto.Access;
 import com.simbirsoft.simchat.domain.dto.AccessCreate;
 import com.simbirsoft.simchat.exception.AccessNotFoundException;
 import com.simbirsoft.simchat.exception.RoleNotFoundException;
+import com.simbirsoft.simchat.exception.UsrAlreadyExistException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.repository.AccessRepository;
 import com.simbirsoft.simchat.repository.RoleRepository;
@@ -35,7 +36,8 @@ public class AccessService {
 	private RoleRepository roleRepository;
 
 	@Transactional
-	public Access create(AccessCreate modelCreate) throws UsrNotFoundException, RoleNotFoundException {
+	public Access create(AccessCreate modelCreate)
+			throws UsrNotFoundException, RoleNotFoundException, UsrAlreadyExistException {
 		UsrEntity userEntity = usrRepository.findById(modelCreate.getUser_id()).orElse(null);
 		RoleEntity roleEntity = roleRepository.findById(modelCreate.getRole_id()).orElse(null);
 
@@ -44,6 +46,9 @@ public class AccessService {
 		}
 		if (roleEntity == null) {
 			throw new RoleNotFoundException("Роль с таким id не найдена");
+		}
+		if (userEntity.getAccess() != null) {
+			throw new UsrAlreadyExistException("Пользователю уже назначены права. Измените существующие");
 		}
 
 		AccessEntity entity = mapper.toEntity(modelCreate);
@@ -106,4 +111,29 @@ public class AccessService {
 		return new String("Право доступа успешно удалено");
 	}
 
+	@Transactional
+	public Access setModerator(Long id, Boolean moderator) throws UsrNotFoundException, AccessNotFoundException {
+
+		RoleEntity moderatorRole = roleRepository.findById(2L).get();
+		RoleEntity defaultUserRole = roleRepository.findById(3L).get();
+		AccessEntity entity = repository.findById(id).orElse(null);
+
+		if (entity == null) {
+			throw new AccessNotFoundException("Право доступа с таким id не найдено");
+		}
+
+		UsrEntity userEntity = usrRepository.findById(entity.getUser().getUser_id()).orElse(null);
+
+		if (userEntity == null) {
+			throw new UsrNotFoundException("Пользователь с таким id не найден");
+		}
+
+		if (moderator) {
+			entity.setRole(moderatorRole);
+		} else {
+			entity.setRole(defaultUserRole);
+		}
+		repository.save(entity);
+		return mapper.toModel(entity);
+	}
 }
