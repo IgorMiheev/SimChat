@@ -96,11 +96,11 @@ public class ChatBotService {
 		}
 		switch (baseCommand) {
 		case ROOM_CREATE:
-			return parseCmdAndCreateRoom(additionCommand);
+			return parseCmdAndCreateRoom(additionCommand, currentUserId);
 		case ROOM_CONNECT:
-			return parseCmdAndConnectToRoom(additionCommand);
+			return parseCmdAndConnectToRoom(additionCommand, currentUserId);
 		case ROOM_DISCONNECT:
-			return parseCmdAndDisconnectFromRoom(additionCommand);
+			return parseCmdAndDisconnectFromRoom(additionCommand, currentUserId);
 		case ROOM_REMOVE:
 			return ResponseEntity.ok("Введена команда " + BaseCommand.ROOM_REMOVE.getText() + additionCommand);
 		// break;
