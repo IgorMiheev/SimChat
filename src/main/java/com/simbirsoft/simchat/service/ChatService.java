@@ -53,11 +53,15 @@ public class ChatService {
 			throw new ChatAlreadyExistException("Чат с таким названием уже существует");
 		}
 
+		if (modelCreate.getName().equals("")) {
+			throw new ChatAlreadyExistException("Нельзя создать чат без имени");
+		}
+
 		ChatEntity entity = mapper.toEntity(modelCreate);
 		repository.save(entity);
 
 		// Автоматически добавляем создателя чата в таблицу Party
-		PartyCreate partyCreate = new PartyCreate(entity.getChat_id(), entity.getUser().getUser_id(), 0,
+		PartyCreate partyCreate = new PartyCreate(entity.getChat_id(), entity.getUser().getUser_id(), "owner",
 				new Timestamp(0L));
 		PartyEntity party = partyMapper.toEntity(partyCreate);
 		partyRepository.save(party);
