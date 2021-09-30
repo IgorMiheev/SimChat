@@ -1,5 +1,6 @@
 package com.simbirsoft.simchat.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,6 +139,33 @@ public class PartyService {
 
 		repository.delete(partyEntity);
 		return new String("Участник чата успешно удален");
+	}
+
+	@Transactional
+	public Party banUserByIdAndChatId(Long user_id, Long chat_id, Long banTime)
+			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException, PartyNotFoundException {
+		UsrEntity userEntity = usrRepository.findById(user_id).orElse(null);
+		ChatEntity chatEntity = chatRepository.findById(chat_id).orElse(null);
+
+		if (userEntity == null) {
+			throw new UsrNotFoundException("Пользователь с таким id не найден");
+		}
+		if (chatEntity == null) {
+			throw new ChatNotFoundException("Чат с таким id не найден");
+		}
+
+		PartyEntity partyEntity = repository.findByUserAndChat(userEntity, chatEntity);
+		if (partyEntity == null) {
+			PartyCreate partyCreate = new PartyCreate(chat_id, user_id, "banned_member",
+					java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(banTime)));
+			return create(partyCreate);
+		} else {
+			PartyCreate partyCreate = new PartyCreate(partyEntity.getChat().getChat_id(),
+					partyEntity.getUser().getUser_id(), "banned_member",
+					java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(banTime)));
+			return update(partyEntity.getParty_id(), partyCreate);
+		}
+
 	}
 
 }
