@@ -22,13 +22,19 @@ public class UsrEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long user_id;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String username;
+
+	@Column(nullable = false)
 	private String password;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String email;
+
+	@Column(nullable = false)
 	private Boolean is_banned;
+
+	@Column(nullable = false)
 	private Timestamp ban_endtime;
 
 	@OneToMany(mappedBy = "user")

@@ -21,8 +21,9 @@ public class ChatEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long chat_id;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String name;
+	@Column(nullable = false)
 	private String chat_type;
 
 	@ManyToOne(fetch = FetchType.LAZY)

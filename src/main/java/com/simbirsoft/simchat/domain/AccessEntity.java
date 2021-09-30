@@ -20,7 +20,7 @@ public class AccessEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long access_id;
 
-	@Column(insertable = false, updatable = false, unique = true)
+	@Column(insertable = false, updatable = false, unique = true, nullable = false)
 	private Long user_id;
 
 	@OneToOne(targetEntity = UsrEntity.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)

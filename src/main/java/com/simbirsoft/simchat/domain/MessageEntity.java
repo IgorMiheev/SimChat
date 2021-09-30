@@ -2,6 +2,7 @@ package com.simbirsoft.simchat.domain;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,8 +19,11 @@ public class MessageEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long message_id;
+	@Column(nullable = false)
 	private String content;
+	@Column(nullable = false)
 	private int status;
+	@Column(nullable = false)
 	private Timestamp create_date;
 
 	@ManyToOne(fetch = FetchType.LAZY)

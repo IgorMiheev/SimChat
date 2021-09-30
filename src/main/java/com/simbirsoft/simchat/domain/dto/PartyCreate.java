@@ -5,10 +5,10 @@ import java.sql.Timestamp;
 public class PartyCreate {
 	private Long chat_id;
 	private Long user_id;
-	private int status;
+	private String status;
 	private Timestamp ban_endtime;
 
-	public PartyCreate(Long chat_id, Long user_id, int status, Timestamp ban_endtime) {
+	public PartyCreate(Long chat_id, Long user_id, String status, Timestamp ban_endtime) {
 		this.chat_id = chat_id;
 		this.user_id = user_id;
 		this.status = status;
@@ -31,11 +31,11 @@ public class PartyCreate {
 		this.user_id = user_id;
 	}
 
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 

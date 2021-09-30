@@ -2,6 +2,7 @@ package com.simbirsoft.simchat.domain;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * 
+ * field "status" can be: "member", "owner", "banned_member"
+ * 
+ * @author SNAZER
+ */
 @Entity
 @Table(name = "Party")
 public class PartyEntity {
@@ -27,13 +34,15 @@ public class PartyEntity {
 	@JoinColumn(name = "chat_id")
 	private ChatEntity chat;
 
-	private int status;
+	@Column(nullable = false)
+	private String status;
+	@Column(nullable = false)
 	private Timestamp ban_endtime;
 
 	public PartyEntity() {
 	}
 
-	public PartyEntity(Long party_id, UsrEntity user, ChatEntity chat, int status, Timestamp ban_endtime) {
+	public PartyEntity(Long party_id, UsrEntity user, ChatEntity chat, String status, Timestamp ban_endtime) {
 		this.party_id = party_id;
 		this.user = user;
 		this.chat = chat;
@@ -41,7 +50,7 @@ public class PartyEntity {
 		this.ban_endtime = ban_endtime;
 	}
 
-	public void update(UsrEntity user, ChatEntity chat, int status, Timestamp ban_endtime) {
+	public void update(UsrEntity user, ChatEntity chat, String status, Timestamp ban_endtime) {
 		this.user = user;
 		this.chat = chat;
 		this.status = status;
@@ -72,11 +81,11 @@ public class PartyEntity {
 		this.chat = chat;
 	}
 
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
