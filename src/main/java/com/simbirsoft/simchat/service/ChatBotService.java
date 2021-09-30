@@ -79,8 +79,10 @@ public class ChatBotService {
 		String cmd = chatBotCommand.getText();
 		String[] splitBase = cmd.split(" ");
 		String baseText = splitBase[0];
+
 		BaseCommand baseCommand = BaseCommand.getEnumByText(baseText);
 		String additionCommand = "";
+
 		if (baseCommand == null) {
 			baseText = splitBase[0] + " " + splitBase[1];
 			baseCommand = BaseCommand.getEnumByText(baseText);
@@ -137,7 +139,7 @@ public class ChatBotService {
 	 * @throws UsrNotFoundException
 	 * @throws ChatAlreadyExistException
 	 */
-	public ResponseEntity parseCmdAndCreateRoom(String additionCommand)
+	public ResponseEntity parseCmdAndCreateRoom(String additionCommand, Long currentUserId)
 			throws UsrNotFoundException, ChatAlreadyExistException {
 		additionCommand = additionCommand.trim();
 		String roomName = "";
@@ -169,7 +171,7 @@ public class ChatBotService {
 				+ ". Команда выполнена успешно.");
 	}
 
-	public ResponseEntity parseCmdAndConnectToRoom(String additionCommand)
+	public ResponseEntity parseCmdAndConnectToRoom(String additionCommand, Long currentUserId)
 			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException {
 		additionCommand = additionCommand.trim();
 		String roomName = "";
@@ -224,7 +226,7 @@ public class ChatBotService {
 				+ ". Команда выполнена успешно.");
 	}
 
-	public ResponseEntity parseCmdAndDisconnectFromRoom(String additionCommand)
+	public ResponseEntity parseCmdAndDisconnectFromRoom(String additionCommand, Long currentUserId)
 			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException, PartyNotFoundException {
 		additionCommand = additionCommand.trim();
 		String roomName = null;
