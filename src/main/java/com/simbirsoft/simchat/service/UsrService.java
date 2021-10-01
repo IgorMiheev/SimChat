@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.simbirsoft.simchat.domain.UsrEntity;
+import com.simbirsoft.simchat.domain.dto.AccessCreate;
 import com.simbirsoft.simchat.domain.dto.Usr;
 import com.simbirsoft.simchat.domain.dto.UsrCreate;
 import com.simbirsoft.simchat.exception.UsrAlreadyExistException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
+import com.simbirsoft.simchat.repository.AccessRepository;
 import com.simbirsoft.simchat.repository.UsrRepository;
 import com.simbirsoft.simchat.service.mapping.UsrMapper;
 
@@ -24,6 +26,12 @@ public class UsrService {
 
 	@Autowired
 	private UsrRepository repository;
+
+	@Autowired
+	private AccessRepository accessRepository;
+
+	@Autowired
+	private AccessService accessService;
 
 	@Transactional
 	public Usr create(UsrCreate modelCreate) throws UsrNotFoundException, Exception {
@@ -38,6 +46,11 @@ public class UsrService {
 
 		UsrEntity entity = mapper.toEntity(modelCreate);
 		repository.save(entity);
+
+		// Create Access DefaultUser(Role id=3)
+		AccessCreate accessCreate = new AccessCreate(entity.getUser_id(), 3L);
+		accessService.create(accessCreate);
+
 		return mapper.toModel(entity);
 	}
 
