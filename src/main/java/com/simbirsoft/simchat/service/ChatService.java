@@ -113,6 +113,23 @@ public class ChatService {
 	}
 
 	@Transactional
+	public Chat rename(Long id, String newChatName) throws UsrNotFoundException, ChatNotFoundException {
+		ChatEntity entity = repository.findById(id).orElse(null);
+		ChatEntity existEntity = repository.findByName(newChatName);
+
+		if (entity == null) {
+			throw new ChatNotFoundException("Чат с таким id не найден");
+		}
+		if (existEntity != null) {
+			throw new ChatNotFoundException("Чат с именем " + newChatName + " уже есть");
+		}
+
+		entity.setName(newChatName);
+		repository.save(entity);
+		return mapper.toModel(entity);
+	}
+
+	@Transactional
 	public String delete(Long id) throws ChatNotFoundException {
 		ChatEntity entity = repository.findById(id).orElse(null);
 
@@ -120,7 +137,13 @@ public class ChatService {
 			throw new ChatNotFoundException("Чат с таким id не найден");
 		}
 
+		// сначала удаляем всех участников
+		for (PartyEntity party : entity.getPartys()) {
+			partyRepository.delete(party);
+		}
+
 		repository.delete(entity);
+
 		return new String("Чат успешно удален");
 	}
 
