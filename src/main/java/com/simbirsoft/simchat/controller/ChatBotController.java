@@ -8,12 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.simbirsoft.simchat.domain.dto.ChatBotCommand;
-import com.simbirsoft.simchat.exception.AccessNotFoundException;
-import com.simbirsoft.simchat.exception.ChatAlreadyExistException;
-import com.simbirsoft.simchat.exception.ChatNotFoundException;
-import com.simbirsoft.simchat.exception.PartyAlreadyExistException;
-import com.simbirsoft.simchat.exception.PartyNotFoundException;
-import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.service.ChatBotService;
 
 @RestController
@@ -24,9 +18,7 @@ public class ChatBotController {
 	ChatBotService chatBotService;
 
 	@PostMapping // Parse
-	public ResponseEntity parseCommand(@RequestBody ChatBotCommand chatBotCommand)
-			throws UsrNotFoundException, ChatAlreadyExistException, ChatNotFoundException, PartyAlreadyExistException,
-			PartyNotFoundException, AccessNotFoundException {
+	public ResponseEntity parseCommand(@RequestBody ChatBotCommand chatBotCommand) throws Exception {
 		return chatBotService.parseBotCommand(chatBotCommand);
 	}
 }

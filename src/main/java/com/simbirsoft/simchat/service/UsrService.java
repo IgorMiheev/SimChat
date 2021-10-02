@@ -129,6 +129,24 @@ public class UsrService {
 		return mapper.toModel(entity);
 	}
 
+	@Transactional
+	public Usr rename(String usrNameOld, String usrNameNew) throws UsrNotFoundException, UsrAlreadyExistException {
+
+		UsrEntity usrEntityOld = repository.findByUsername(usrNameOld);
+		UsrEntity usrEntityNew = repository.findByUsername(usrNameNew);
+
+		if (usrEntityOld == null) {
+			throw new UsrNotFoundException("Пользователь с именем " + usrNameOld + " не найден");
+		}
+		if (usrEntityNew != null) {
+			throw new UsrAlreadyExistException("Пользователь с именем " + usrNameNew + " уже существует");
+		}
+
+		usrEntityOld.setUsername(usrNameNew);
+		repository.save(usrEntityOld);
+		return mapper.toModel(usrEntityOld);
+	}
+
 	/**
 	 * Снятие блокировки с пользователя
 	 * 

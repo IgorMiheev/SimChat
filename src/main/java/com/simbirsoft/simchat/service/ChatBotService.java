@@ -1,12 +1,20 @@
 package com.simbirsoft.simchat.service;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.ChannelListResponse;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
 import com.simbirsoft.simchat.domain.ChatEntity;
 import com.simbirsoft.simchat.domain.PartyEntity;
 import com.simbirsoft.simchat.domain.UsrEntity;
@@ -18,11 +26,13 @@ import com.simbirsoft.simchat.exception.ChatAlreadyExistException;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
 import com.simbirsoft.simchat.exception.PartyAlreadyExistException;
 import com.simbirsoft.simchat.exception.PartyNotFoundException;
+import com.simbirsoft.simchat.exception.UsrAlreadyExistException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.repository.ChatRepository;
 import com.simbirsoft.simchat.repository.PartyRepository;
 import com.simbirsoft.simchat.repository.UsrRepository;
 import com.simbirsoft.simchat.service.utils.StringParse;
+import com.simbirsoft.simchat.service.utils.YouTubeApi;
 
 @Service
 public class ChatBotService {
@@ -76,9 +86,7 @@ public class ChatBotService {
 		}
 	}
 
-	public ResponseEntity parseBotCommand(ChatBotCommand chatBotCommand)
-			throws UsrNotFoundException, ChatAlreadyExistException, ChatNotFoundException, PartyAlreadyExistException,
-			PartyNotFoundException, AccessNotFoundException {
+	public ResponseEntity parseBotCommand(ChatBotCommand chatBotCommand) throws Exception {
 
 		String cmd = chatBotCommand.getText();
 		String[] splitBase = cmd.split(" ");
@@ -87,7 +95,7 @@ public class ChatBotService {
 		BaseCommand baseCommand = BaseCommand.getEnumByText(baseText);
 		String additionCommand = "";
 
-		if (baseCommand == null) {
+		if (baseCommand == null && splitBase.length > 1) {
 			baseText = splitBase[0] + " " + splitBase[1];
 			baseCommand = BaseCommand.getEnumByText(baseText);
 		}
@@ -120,18 +128,13 @@ public class ChatBotService {
 		case USER_MODERATOR:
 			return parseCmdAndUserModerator(additionCommand);
 		case USER_RENAME:
-			return ResponseEntity.ok("Введена команда " + BaseCommand.USER_RENAME.getText() + additionCommand);
-		// break;
+			return parseCmdAndUserRename(additionCommand);
 		case YBOT_FIND:
-			return ResponseEntity.ok("Введена команда " + BaseCommand.YBOT_FIND.getText() + additionCommand);
-		// break;
+			return yBotFind(additionCommand);
 		case YBOT_HELP:
-			return ResponseEntity.ok("Введена команда " + BaseCommand.YBOT_HELP.getText() + additionCommand);
-		// break;
+			return cmdYBotHelp();
 		case HELP:
 			return cmdHelp();
-		// break;
-
 		default:
 			break;
 		}
@@ -505,32 +508,179 @@ public class ChatBotService {
 		}
 	}
 
+	public ResponseEntity parseCmdAndUserRename(String additionCommand)
+			throws ChatNotFoundException, UsrNotFoundException, AccessNotFoundException, UsrAlreadyExistException {
+
+		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
+		LinkedList<Integer> rightBracketPos = new LinkedList<Integer>();
+		readBracketPos(additionCommand, leftBracketPos, rightBracketPos);
+
+		LinkedList<String> args = new LinkedList<String>();
+		readArgs(additionCommand, args);
+
+		if (args.size() != 2) {
+			return ResponseEntity.badRequest()
+					.body("Неверное количество аргументов. Введите //help для получения списка комманд.");
+		}
+		if (args.get(0) == null || args.get(0).equals("")) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+		if (args.get(1) == null || args.get(1).equals("")) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+		if (leftBracketPos.get(0) != 0) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+		if (rightBracketPos.get(1) != additionCommand.length() - 1) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд. ");
+		}
+
+		String usrNameOld = args.get(0);
+		String usrNameNew = args.get(1);
+
+		usrService.rename(usrNameOld, usrNameNew);
+
+		return ResponseEntity.ok("Готово. Пользователь с именем " + usrNameOld + " сменил имя на " + usrNameNew);
+
+	}
+
+	public ResponseEntity yBotFind(String additionCommand) throws Exception {
+		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
+		LinkedList<Integer> rightBracketPos = new LinkedList<Integer>();
+		readBracketPos(additionCommand, leftBracketPos, rightBracketPos);
+
+		LinkedList<String> args = new LinkedList<String>();
+		readArgs(additionCommand, args);
+
+		if (args.size() != 2) {
+			return ResponseEntity.badRequest()
+					.body("Неверное количество аргументов. Введите //help для получения списка комманд.");
+		}
+		if (args.get(0) == null || args.get(0).equals("")) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+		if (args.get(1) == null || args.get(1).equals("")) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+		if (leftBracketPos.get(0) != 0) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+		if (!(additionCommand.substring(leftBracketPos.get(1) - 3, leftBracketPos.get(1)).equals("}||"))) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+
+		String channelName = args.get(0);
+		String videoName = args.get(1);
+		// videoName = "%22" + videoName + "%22";
+
+		YouTube youtubeService = YouTubeApi.getService();
+
+		// Define and execute the API request
+		YouTube.Channels.List request = youtubeService.channels().list("id");
+		ChannelListResponse response = request.setForUsername(channelName).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		if (response.getPageInfo().getTotalResults() != 1) {
+			return ResponseEntity.ok("Не найдено точного совпадения по имени канала");
+		}
+
+		String channelId = response.getItems().get(0).getId();
+
+		YouTube.Search.List requestSearchVideo = youtubeService.search().list("snippet");
+		SearchListResponse responseSearchVideo = requestSearchVideo.setChannelId(channelId).setMaxResults(25L)
+				.setQ(videoName).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		List<String> videoIdsList = new LinkedList<String>();
+		for (SearchResult sr : responseSearchVideo.getItems()) {
+			String videoId = sr.getId().getVideoId();
+			videoIdsList.add(videoId);
+		}
+
+		if (responseSearchVideo.getPageInfo().getTotalResults() == 0) {
+			return ResponseEntity.ok("Видео с именем " + videoName + " на канале " + channelName + " не найдено");
+		}
+
+		String videoIdsString = String.join(",", videoIdsList);
+
+		YouTube.Videos.List requestVideo = youtubeService.videos().list("snippet,contentDetails,statistics");
+		VideoListResponse responseVideo = requestVideo.setId(videoIdsString).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		StringBuilder result = new StringBuilder();
+		result.append(
+				"Найдено " + responseSearchVideo.getPageInfo().getTotalResults() + " видео. Первые 25 результатов:");
+
+		for (Video sr : responseVideo.getItems()) {
+			String videoTitle = sr.getSnippet().getTitle();
+			String videoId = sr.getId();
+			BigInteger views = sr.getStatistics().getViewCount();
+			BigInteger likes = sr.getStatistics().getLikeCount();
+
+			result.append("\r\n https://www.youtube.com/watch?v=" + videoId);
+			if (additionCommand.contains(" -l")) {
+				result.append(" лайков: " + likes);
+			}
+			if (additionCommand.contains(" -v")) {
+				result.append(" просмотров: " + views);
+			}
+			result.append(" " + videoTitle);
+
+		}
+
+		return ResponseEntity.ok(result);
+
+//		if (responseVideo.getItems().size() == 0) {
+//			return ResponseEntity.ok("Видео не найдено");
+//		} else {
+//			return ResponseEntity.ok(responseVideo);
+//		}
+
+//		return ResponseEntity.ok(responseVideo);
+
+		// System.out.println(response);
+
+		// return ResponseEntity.ok("Поиск видео с именем: " + videoName + " на канале:
+		// " + channelName);
+	}
+
 	public ResponseEntity cmdHelp() {
 		// LinkedList<String> helpNote = new LinkedList<String>();
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("Команды:");
 		sb.append("\r\nКомнаты:");
-		sb.append(
-				"\r\n1. //room create {Название комнаты} - создает комнаты; -c закрытая комната. Только (владелец, модератор и админ) может добавлять/удалять пользователей из комнаты.");
+		sb.append("\r\n1. //room create {Название комнаты} - создает комнаты; -c закрытая комната. "
+				+ "Только (владелец, модератор и админ) может добавлять/удалять пользователей из комнаты.");
 		sb.append("\r\n2. //room remove {Название комнаты} - удаляет комнату (владелец и админ);");
 		sb.append("\r\n3. //room rename {Название комнаты} - переименование комнаты (владелец и админ)");
-		sb.append(
-				"\r\n4. //room connect {Название комнаты} - войти в комнату; -l {login пользователя} - добавить пользователя в комнату");
-		sb.append(
-				"\r\n5. //room disconnect {Название комнаты} - выйти из заданной комнаты;-l {login пользователя} - выгоняет пользователя из комнаты (для владельца, модератора и админа); -m {Количество минут} - время на которое пользователь не сможет войти (для владельца, модератора и админа).");
+		sb.append("\r\n4. //room connect {Название комнаты} - войти в комнату; "
+				+ "-l {login пользователя} - добавить пользователя в комнату");
+		sb.append("\r\n5. //room disconnect {Название комнаты} - выйти из заданной комнаты;"
+				+ "-l {login пользователя} - выгоняет пользователя из комнаты (для владельца, модератора и админа); "
+				+ "-m {Количество минут} - время на которое пользователь не сможет войти (для владельца, модератора и админа).");
 		sb.append("\r\nПользователи:");
-		sb.append("\r\n1. //user rename {login пользователя} (владелец и админ);");
-		sb.append(
-				"\r\n2. //user ban -l {login пользователя} - выгоняет пользователя из всех комнат; -m {Количество минут} - время на которое пользователь не сможет войти.");
-		sb.append(
-				"\r\n3. //user moderator {login пользователя} - действия над модераторами. -n - назначить пользователя модератором. -d - “разжаловать” пользователя.");
+		sb.append("\r\n1. //user rename {login пользователя} {новое имя} (владелец и админ);");
+		sb.append("\r\n2. //user ban -l {login пользователя} - выгоняет пользователя из всех комнат; "
+				+ "-m {Количество минут} - время на которое пользователь не сможет войти.");
+		sb.append("\r\n3. //user moderator {login пользователя} - действия над модераторами. "
+				+ "-n - назначить пользователя модератором. -d - “разжаловать” пользователя.");
 		sb.append("\r\nБоты:");
-		sb.append(
-				"\r\n1. //yBot find -k -l {название канала}||{название видео} - в ответ бот присылает ссылку на ролик; -v - выводит количество текущих просмотров. -l - выводит количество лайков под видео.");
+		sb.append("\r\n1. //yBot find {название канала}||{название видео} - в ответ бот присылает ссылку на ролик; "
+				+ "-v - выводит количество текущих просмотров. -l - выводит количество лайков под видео.");
 		sb.append("\r\n2. //yBot help - список доступных команд для взаимодействия.");
 		sb.append("\r\nДругие:");
 		sb.append("\r\n1. //help - выводит список доступных команд.");
+
+		return ResponseEntity.ok(sb);
+
+	}
+
+	public ResponseEntity cmdYBotHelp() {
+		// LinkedList<String> helpNote = new LinkedList<String>();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Команды:");
+		sb.append("\r\n1. //yBot find {название канала}||{название видео} - в ответ бот присылает ссылку на ролик; "
+				+ "-v - выводит количество текущих просмотров. -l - выводит количество лайков под видео.");
+		sb.append("\r\n2. //yBot help - список доступных команд для взаимодействия.");
 
 		return ResponseEntity.ok(sb);
 
