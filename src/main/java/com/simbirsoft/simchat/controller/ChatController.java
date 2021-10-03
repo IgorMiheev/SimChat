@@ -3,6 +3,7 @@ package com.simbirsoft.simchat.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import com.simbirsoft.simchat.service.ChatService;
 
 @RestController
 @RequestMapping("/chat")
+@PreAuthorize("hasAnyAuthority('Moderator','Administrator','DefaultUser')")
 public class ChatController {
 
 	@Autowired

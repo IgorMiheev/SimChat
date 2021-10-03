@@ -13,6 +13,7 @@ import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.Chat;
 import com.simbirsoft.simchat.domain.dto.ChatCreate;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
+import com.simbirsoft.simchat.domain.enums.PartyStatus;
 import com.simbirsoft.simchat.exception.ChatAlreadyExistException;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
 import com.simbirsoft.simchat.exception.UsrNotFoundException;
@@ -61,7 +62,7 @@ public class ChatService {
 		repository.save(entity);
 
 		// Автоматически добавляем создателя чата в таблицу Party
-		PartyCreate partyCreate = new PartyCreate(entity.getChat_id(), entity.getUser().getUser_id(), "owner",
+		PartyCreate partyCreate = new PartyCreate(entity.getChat_id(), entity.getUser().getUser_id(), PartyStatus.OWNER,
 				new Timestamp(0L));
 		PartyEntity party = partyMapper.toEntity(partyCreate);
 		partyRepository.save(party);

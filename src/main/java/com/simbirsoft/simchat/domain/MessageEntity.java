@@ -23,7 +23,9 @@ public class MessageEntity {
 	private String content;
 	@Column(nullable = false)
 	private int status;
+
 	@Column(nullable = false)
+	// @CreatedDate
 	private Timestamp create_date;
 
 	@ManyToOne(fetch = FetchType.LAZY)

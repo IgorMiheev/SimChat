@@ -1,5 +1,7 @@
 package com.simbirsoft.simchat.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +11,6 @@ import com.simbirsoft.simchat.domain.UsrEntity;
 public interface UsrRepository extends JpaRepository<UsrEntity, Long> {
 	public UsrEntity findByEmail(String email);
 
-	public UsrEntity findByUsername(String username);
+	public Optional<UsrEntity> findByUsername(String username);
 
 }

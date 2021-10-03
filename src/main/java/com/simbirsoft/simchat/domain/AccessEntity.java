@@ -1,5 +1,9 @@
 package com.simbirsoft.simchat.domain;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 @Entity
 @Table(name = "AccessTable")
 public class AccessEntity {
@@ -23,11 +29,11 @@ public class AccessEntity {
 	@Column(insertable = false, updatable = false, unique = true, nullable = false)
 	private Long user_id;
 
-	@OneToOne(targetEntity = UsrEntity.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne(targetEntity = UsrEntity.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
 	private UsrEntity user;
 
-	@ManyToOne(targetEntity = RoleEntity.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = RoleEntity.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "role_id")
 	private RoleEntity role;
 
@@ -67,6 +73,19 @@ public class AccessEntity {
 
 	public void setRole(RoleEntity role) {
 		this.role = role;
+	}
+
+	public Set<SimpleGrantedAuthority> getAuthorities() {
+		// return (Set<SimpleGrantedAuthority>) Arrays.asList(new
+		// SimpleGrantedAuthority(getRole().getName()));
+		/*
+		 * System.out.println(Arrays.toString(Arrays.asList(getRole()).stream()
+		 * .map(roles -> new SimpleGrantedAuthority(roles.getName()))
+		 * .collect(Collectors.toSet())));
+		 */
+		// System.out.println(getRole().getName());
+		return Arrays.asList(getRole()).stream().map(roles -> new SimpleGrantedAuthority(roles.getName()))
+				.collect(Collectors.toSet());
 	}
 
 }

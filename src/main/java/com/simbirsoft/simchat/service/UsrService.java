@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +34,14 @@ public class UsrService {
 	@Autowired
 	private AccessService accessService;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	// private Userdetailse
+
 	@Transactional
 	public Usr create(UsrCreate modelCreate) throws UsrNotFoundException, Exception {
-		UsrEntity usrEntity = repository.findByUsername(modelCreate.getUsername());
+		UsrEntity usrEntity = repository.findByUsername(modelCreate.getUsername()).orElse(null);
 		if (usrEntity != null) {
 			throw new UsrAlreadyExistException("Пользователь с таким username уже существует");
 		}
@@ -44,6 +50,8 @@ public class UsrService {
 			throw new UsrAlreadyExistException("Пользователь с таким email уже существует");
 		}
 
+		modelCreate.setPassword(passwordEncoder.encode(modelCreate.getPassword()));
+//		modelCreate.setPassword(modelCreate.getPassword());
 		UsrEntity entity = mapper.toEntity(modelCreate);
 		repository.save(entity);
 
@@ -87,7 +95,8 @@ public class UsrService {
 		if (entity == null) {
 			throw new UsrNotFoundException("Пользователь с таким id не найден");
 		}
-
+		modelCreate.setPassword(passwordEncoder.encode(modelCreate.getPassword()));
+//		modelCreate.setPassword(modelCreate.getPassword());
 		entity = mapper.updateEntity(modelCreate, entity);
 		repository.save(entity);
 		return mapper.toModel(entity);
@@ -132,8 +141,8 @@ public class UsrService {
 	@Transactional
 	public Usr rename(String usrNameOld, String usrNameNew) throws UsrNotFoundException, UsrAlreadyExistException {
 
-		UsrEntity usrEntityOld = repository.findByUsername(usrNameOld);
-		UsrEntity usrEntityNew = repository.findByUsername(usrNameNew);
+		UsrEntity usrEntityOld = repository.findByUsername(usrNameOld).orElse(null);
+		UsrEntity usrEntityNew = repository.findByUsername(usrNameNew).orElse(null);
 
 		if (usrEntityOld == null) {
 			throw new UsrNotFoundException("Пользователь с именем " + usrNameOld + " не найден");
@@ -168,4 +177,11 @@ public class UsrService {
 		return mapper.toModel(entity);
 	}
 
+	public void login() {
+
+	}
+
+	public void logout() {
+
+	}
 }

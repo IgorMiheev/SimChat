@@ -21,6 +21,7 @@ import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.ChatBotCommand;
 import com.simbirsoft.simchat.domain.dto.ChatCreate;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
+import com.simbirsoft.simchat.domain.enums.PartyStatus;
 import com.simbirsoft.simchat.exception.AccessNotFoundException;
 import com.simbirsoft.simchat.exception.ChatAlreadyExistException;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
@@ -148,6 +149,7 @@ public class ChatBotService {
 	 * @throws UsrNotFoundException
 	 * @throws ChatAlreadyExistException
 	 */
+
 	public ResponseEntity parseCmdAndCreateRoom(String additionCommand, Long currentUserId)
 			throws UsrNotFoundException, ChatAlreadyExistException {
 		String roomName = "";
@@ -212,7 +214,7 @@ public class ChatBotService {
 		UsrEntity userEntity = null;
 
 		if (additionCommand.contains("-l {")) {
-			userEntity = usrRepository.findByUsername(userName);
+			userEntity = usrRepository.findByUsername(userName).orElse(null);
 		} else {
 			userEntity = usrRepository.findById(currentUserId).orElse(null);
 		}
@@ -225,7 +227,7 @@ public class ChatBotService {
 
 		}
 
-		PartyCreate modelCreate = new PartyCreate(chatEntity.getChat_id(), userEntity.getUser_id(), "member",
+		PartyCreate modelCreate = new PartyCreate(chatEntity.getChat_id(), userEntity.getUser_id(), PartyStatus.MEMBER,
 				java.sql.Timestamp.valueOf(LocalDateTime.now()));
 		partyService.create(modelCreate);
 
@@ -281,7 +283,7 @@ public class ChatBotService {
 		if (additionCommand.contains("-l {")) {
 			UsrEntity userEntity = null;
 
-			userEntity = usrRepository.findByUsername(userName);
+			userEntity = usrRepository.findByUsername(userName).orElse(null);
 
 			if (userEntity == null) {
 				throw new UsrNotFoundException("Пользователь с именем " + userName + " не найден");
@@ -294,7 +296,7 @@ public class ChatBotService {
 				if (banTime != null) {
 
 					PartyCreate modelCreate = new PartyCreate(chatEntity.getChat_id(), userEntity.getUser_id(),
-							"banned_member", java.sql.Timestamp.valueOf(LocalDateTime.now()));
+							PartyStatus.BANNED_MEMBER, java.sql.Timestamp.valueOf(LocalDateTime.now()));
 					partyService.create(modelCreate);
 					partyEntity = partyRepository.findByUserAndChat(userEntity, chatEntity);
 
@@ -447,7 +449,7 @@ public class ChatBotService {
 		String usrName = args.get(0);
 		Long banTime = Long.parseLong(args.get(1));
 
-		UsrEntity usrEntity = usrRepository.findByUsername(usrName);
+		UsrEntity usrEntity = usrRepository.findByUsername(usrName).orElse(null);
 
 		if (usrEntity == null) {
 			throw new UsrNotFoundException("Пользователь с именем " + usrName + " не найден");
@@ -492,7 +494,7 @@ public class ChatBotService {
 
 		String usrName = args.get(0);
 
-		UsrEntity usrEntity = usrRepository.findByUsername(usrName);
+		UsrEntity usrEntity = usrRepository.findByUsername(usrName).orElse(null);
 
 		if (usrEntity == null) {
 			throw new UsrNotFoundException("Пользователь с именем " + usrName + " не найден");

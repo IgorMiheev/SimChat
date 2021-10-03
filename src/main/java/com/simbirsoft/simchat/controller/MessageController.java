@@ -3,6 +3,7 @@ package com.simbirsoft.simchat.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,11 +45,13 @@ public class MessageController {
 		return service.update(id, modelCreate);
 	}
 
+	@PreAuthorize("hasAnyAuthority('Moderator','Administrator')")
 	@DeleteMapping(params = "id") // Delete
 	public String deleteMessageById(@RequestParam("id") Long id) throws MessageNotFoundException {
 		return service.delete(id);
 	}
 
+	@PreAuthorize("hasAuthority('Administrator')")
 	@GetMapping("/all")
 	public List<Message> getAll() throws MessageNotFoundException {
 		return service.getAll();

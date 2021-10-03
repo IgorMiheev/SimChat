@@ -12,6 +12,7 @@ import com.simbirsoft.simchat.domain.PartyEntity;
 import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.Party;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
+import com.simbirsoft.simchat.domain.enums.PartyStatus;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
 import com.simbirsoft.simchat.exception.PartyAlreadyExistException;
 import com.simbirsoft.simchat.exception.PartyNotFoundException;
@@ -156,12 +157,12 @@ public class PartyService {
 
 		PartyEntity partyEntity = repository.findByUserAndChat(userEntity, chatEntity);
 		if (partyEntity == null) {
-			PartyCreate partyCreate = new PartyCreate(chat_id, user_id, "banned_member",
+			PartyCreate partyCreate = new PartyCreate(chat_id, user_id, PartyStatus.BANNED_MEMBER,
 					java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(banTime)));
 			return create(partyCreate);
 		} else {
 			PartyCreate partyCreate = new PartyCreate(partyEntity.getChat().getChat_id(),
-					partyEntity.getUser().getUser_id(), "banned_member",
+					partyEntity.getUser().getUser_id(), PartyStatus.BANNED_MEMBER,
 					java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(banTime)));
 			return update(partyEntity.getParty_id(), partyCreate);
 		}
