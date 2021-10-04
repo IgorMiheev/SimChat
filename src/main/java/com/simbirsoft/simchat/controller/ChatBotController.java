@@ -20,7 +20,7 @@ public class ChatBotController {
 	ChatBotService chatBotService;
 
 	@PostMapping // Parse
-	public ResponseEntity parseCommand(@RequestBody ChatBotCommand chatBotCommand) throws Exception {
+	public ResponseEntity<?> parseCommand(@RequestBody ChatBotCommand chatBotCommand) throws Exception {
 		return chatBotService.parseBotCommand(chatBotCommand);
 	}
 }

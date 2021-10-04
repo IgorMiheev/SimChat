@@ -1,12 +1,14 @@
 package com.simbirsoft.simchat.domain.dto;
 
+import com.simbirsoft.simchat.domain.enums.ChatType;
+
 public class ChatCreate {
 
 	private String name;
 	private Long user_id;
-	private String chat_type;
+	private ChatType chat_type;
 
-	public ChatCreate(String name, Long user_id, String chat_type) {
+	public ChatCreate(String name, Long user_id, ChatType chat_type) {
 		this.name = name;
 		this.user_id = user_id;
 		this.chat_type = chat_type;
@@ -28,11 +30,11 @@ public class ChatCreate {
 		this.user_id = user_id;
 	}
 
-	public String getChat_type() {
+	public ChatType getChat_type() {
 		return chat_type;
 	}
 
-	public void setChat_type(String chat_type) {
+	public void setChat_type(ChatType chat_type) {
 		this.chat_type = chat_type;
 	}
 

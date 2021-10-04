@@ -3,6 +3,7 @@ package com.simbirsoft.simchat.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +56,8 @@ public class AccessController {
 	}
 
 	@PutMapping(params = { "id", "moderator" }) // Update
-	public Access moderatorAssigment(@RequestParam("id") Long id, @RequestParam("moderator") Boolean moderator)
+	public ResponseEntity<?> moderatorAssigment(@RequestParam("id") Long id,
+			@RequestParam("moderator") Boolean moderator)
 			throws UsrNotFoundException, AccessNotFoundException {
 		return service.setModerator(id, moderator);
 	}

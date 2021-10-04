@@ -19,9 +19,10 @@ public class BaseControllerAdvice {
 
 	@ExceptionHandler({ AccessNotFoundException.class, AccessNotFoundException.class, ChatNotFoundException.class,
 			MessageNotFoundException.class, PartyNotFoundException.class, RoleNotFoundException.class,
-			UsrNotFoundException.class })
+			UsrNotFoundException.class, ParametersNotFoundException.class })
 	public Object NotFoundException(Exception ex, WebRequest request) {
 		return response(HttpStatus.NOT_FOUND, ex, request);
+
 	}
 
 	@ExceptionHandler({ ChatAlreadyExistException.class, UsrAlreadyExistException.class,
@@ -30,10 +31,15 @@ public class BaseControllerAdvice {
 		return response(HttpStatus.CONFLICT, ex, request);
 	}
 
-	@ExceptionHandler({ Exception.class })
-	public Object OtherException(Exception ex, WebRequest request) {
-		return response(HttpStatus.INTERNAL_SERVER_ERROR, ex, request);
+	@ExceptionHandler({ org.springframework.http.converter.HttpMessageNotReadableException.class })
+	public Object NotBody(Exception ex, WebRequest request) {
+		return response(HttpStatus.NOT_FOUND, ex, request);
 	}
+
+	// @ExceptionHandler({ Exception.class })
+//	public Object OtherException(Exception ex, WebRequest request) {
+//		return response(HttpStatus.INTERNAL_SERVER_ERROR, ex, request);
+//	}
 
 	private Object response(HttpStatus status, Exception ex, WebRequest request) {
 		HttpHeaders headers = new HttpHeaders();

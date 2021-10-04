@@ -3,6 +3,7 @@ package com.simbirsoft.simchat.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,8 @@ public class ChatController {
 	private ChatService service;
 
 	@PostMapping // Create
-	public Chat createChat(@RequestBody ChatCreate modelCreate) throws UsrNotFoundException, ChatAlreadyExistException {
+	public ResponseEntity<?> createChat(@RequestBody ChatCreate modelCreate)
+			throws UsrNotFoundException, ChatAlreadyExistException {
 		return service.create(modelCreate);
 	}
 

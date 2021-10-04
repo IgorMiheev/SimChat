@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import com.simbirsoft.simchat.domain.PartyEntity;
 import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.Party;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
+import com.simbirsoft.simchat.domain.enums.ChatType;
 import com.simbirsoft.simchat.domain.enums.PartyStatus;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
 import com.simbirsoft.simchat.exception.PartyAlreadyExistException;
@@ -21,6 +24,7 @@ import com.simbirsoft.simchat.repository.ChatRepository;
 import com.simbirsoft.simchat.repository.PartyRepository;
 import com.simbirsoft.simchat.repository.UsrRepository;
 import com.simbirsoft.simchat.service.mapping.PartyMapper;
+import com.simbirsoft.simchat.service.utils.CurrentUserRoleCheck;
 
 @Service
 public class PartyService {
@@ -38,7 +42,7 @@ public class PartyService {
 	private ChatRepository chatRepository;
 
 	@Transactional
-	public Party create(PartyCreate modelCreate)
+	public ResponseEntity<?> create(PartyCreate modelCreate)
 			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException {
 		UsrEntity userEntity = usrRepository.findById(modelCreate.getUser_id()).orElse(null);
 		ChatEntity chatEntity = chatRepository.findById(modelCreate.getChat_id()).orElse(null);
@@ -55,9 +59,24 @@ public class PartyService {
 			throw new PartyAlreadyExistException("Пользователь уже в чате");
 		}
 
+		// Проверка является ли текущий пользователь владельцем этого чата или
+		// админом/модератором
+		String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		if (chatEntity.getChat_type().equals(ChatType.PRIVATE)) {
+			if (chatEntity.getUser().getUsername() != currentUserName) {
+				if (!(CurrentUserRoleCheck.isAdministrator())) {
+					if (!(CurrentUserRoleCheck.isModerator())) {
+						return ResponseEntity.badRequest().body("У вас не хватает прав доступа для этой операции");
+					}
+				}
+			}
+		}
+
 		PartyEntity entity = mapper.toEntity(modelCreate);
 		repository.save(entity);
-		return mapper.toModel(entity);
+		return ResponseEntity
+				.ok("Пользователь " + userEntity.getUsername() + " присоединился к чату " + chatEntity.getName());
 	}
 
 	@Transactional(readOnly = true)
@@ -87,7 +106,7 @@ public class PartyService {
 	}
 
 	@Transactional
-	public Party update(Long id, PartyCreate modelCreate)
+	public ResponseEntity<?> update(Long id, PartyCreate modelCreate)
 			throws UsrNotFoundException, PartyNotFoundException, ChatNotFoundException {
 		PartyEntity entity = repository.findById(id).orElse(null);
 		UsrEntity userEntity = usrRepository.findById(modelCreate.getUser_id()).orElse(null);
@@ -105,19 +124,33 @@ public class PartyService {
 
 		entity = mapper.updateEntity(modelCreate, entity);
 		repository.save(entity);
-		return mapper.toModel(entity);
+		return ResponseEntity.ok(mapper.toModel(entity));
 	}
 
 	@Transactional
-	public String delete(Long id) throws PartyNotFoundException {
+	public ResponseEntity<?> delete(Long id) throws PartyNotFoundException {
 		PartyEntity entity = repository.findById(id).orElse(null);
 
 		if (entity == null) {
 			throw new PartyNotFoundException("Участник чата с таким id не найден");
 		}
 
+		// Проверка является ли текущий пользователь выходящим из чата, владельцем чата
+		// или админом/модератором
+		String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		if (entity.getUser().getUsername() != currentUserName) {
+			if (entity.getChat().getUser().getUsername() != currentUserName) {
+				if (!(CurrentUserRoleCheck.isAdministrator())) {
+					if (!(CurrentUserRoleCheck.isModerator())) {
+						return ResponseEntity.badRequest().body("У вас не хватает прав доступа для этой операции");
+					}
+				}
+			}
+		}
+
 		repository.delete(entity);
-		return new String("Участник чата успешно удален");
+		return ResponseEntity.ok("Готово. Пользователь " + entity.getUser().getUsername() + " отключен от чата "
+				+ entity.getChat().getName());
 	}
 
 	@Transactional
@@ -143,7 +176,7 @@ public class PartyService {
 	}
 
 	@Transactional
-	public Party banUserByIdAndChatId(Long user_id, Long chat_id, Long banTime)
+	public ResponseEntity<?> banUserByIdAndChatId(Long user_id, Long chat_id, Long banTime)
 			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException, PartyNotFoundException {
 		UsrEntity userEntity = usrRepository.findById(user_id).orElse(null);
 		ChatEntity chatEntity = chatRepository.findById(chat_id).orElse(null);
@@ -159,12 +192,16 @@ public class PartyService {
 		if (partyEntity == null) {
 			PartyCreate partyCreate = new PartyCreate(chat_id, user_id, PartyStatus.BANNED_MEMBER,
 					java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(banTime)));
-			return create(partyCreate);
+			create(partyCreate);
+			return ResponseEntity.ok("Готово. Пользователь " + userEntity.getUsername() + " не сможет войти в этот чат "
+					+ banTime + " минут");
 		} else {
 			PartyCreate partyCreate = new PartyCreate(partyEntity.getChat().getChat_id(),
 					partyEntity.getUser().getUser_id(), PartyStatus.BANNED_MEMBER,
 					java.sql.Timestamp.valueOf(LocalDateTime.now().plusMinutes(banTime)));
-			return update(partyEntity.getParty_id(), partyCreate);
+			update(partyEntity.getParty_id(), partyCreate);
+			return ResponseEntity.ok("Готово. Пользователь " + userEntity.getUsername() + " не сможет войти в этот чат "
+					+ banTime + " минут");
 		}
 
 	}

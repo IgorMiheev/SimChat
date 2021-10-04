@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.api.services.youtube.YouTube;
@@ -21,7 +22,9 @@ import com.simbirsoft.simchat.domain.UsrEntity;
 import com.simbirsoft.simchat.domain.dto.ChatBotCommand;
 import com.simbirsoft.simchat.domain.dto.ChatCreate;
 import com.simbirsoft.simchat.domain.dto.PartyCreate;
+import com.simbirsoft.simchat.domain.enums.ChatType;
 import com.simbirsoft.simchat.domain.enums.PartyStatus;
+import com.simbirsoft.simchat.domain.enums.UserStatus;
 import com.simbirsoft.simchat.exception.AccessNotFoundException;
 import com.simbirsoft.simchat.exception.ChatAlreadyExistException;
 import com.simbirsoft.simchat.exception.ChatNotFoundException;
@@ -32,6 +35,8 @@ import com.simbirsoft.simchat.exception.UsrNotFoundException;
 import com.simbirsoft.simchat.repository.ChatRepository;
 import com.simbirsoft.simchat.repository.PartyRepository;
 import com.simbirsoft.simchat.repository.UsrRepository;
+import com.simbirsoft.simchat.service.utils.CurrentUserRoleCheck;
+import com.simbirsoft.simchat.service.utils.CurrentUserStatusCheck;
 import com.simbirsoft.simchat.service.utils.StringParse;
 import com.simbirsoft.simchat.service.utils.YouTubeApi;
 
@@ -59,8 +64,6 @@ public class ChatBotService {
 	@Autowired
 	private PartyRepository partyRepository;
 
-	Long currentUserId = 1L;
-
 	enum BaseCommand {
 		ROOM_CREATE("//room create"), ROOM_REMOVE("//room remove"), ROOM_RENAME("//room rename"),
 		ROOM_CONNECT("//room connect"), ROOM_DISCONNECT("//room disconnect"), USER_RENAME("//user rename"),
@@ -87,7 +90,7 @@ public class ChatBotService {
 		}
 	}
 
-	public ResponseEntity parseBotCommand(ChatBotCommand chatBotCommand) throws Exception {
+	public ResponseEntity<?> parseBotCommand(ChatBotCommand chatBotCommand) throws Exception {
 
 		String cmd = chatBotCommand.getText();
 		String[] splitBase = cmd.split(" ");
@@ -112,6 +115,16 @@ public class ChatBotService {
 			return ResponseEntity.badRequest()
 					.body("Ошибка в синтаксисе команды. Введите //help для получения списка комманд.");
 		}
+
+		String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+		UsrEntity usrEntity = usrRepository.findByUsername(currentUserName).orElse(null);
+
+		if (usrEntity == null) {
+			throw new UsrNotFoundException(
+					"Ошибка получения текущего пользователя. Пользователь с именем " + currentUserName + " не найден");
+		}
+
+		Long currentUserId = usrEntity.getUser_id();
 
 		switch (baseCommand) {
 		case ROOM_CREATE:
@@ -150,10 +163,11 @@ public class ChatBotService {
 	 * @throws ChatAlreadyExistException
 	 */
 
-	public ResponseEntity parseCmdAndCreateRoom(String additionCommand, Long currentUserId)
+	public ResponseEntity<?> parseCmdAndCreateRoom(String additionCommand, Long currentUserId)
 			throws UsrNotFoundException, ChatAlreadyExistException {
 		String roomName = "";
-		String chatType = "";
+		ChatType chatType;
+
 		try {
 			// получаем имя чата между первым символом { и последним }
 			roomName = additionCommand.substring(additionCommand.indexOf("{") + 1, additionCommand.lastIndexOf("}"));
@@ -167,20 +181,19 @@ public class ChatBotService {
 		if (additionCommand.lastIndexOf("}") < additionCommand.trim().length() - 1) {
 
 			if (additionCommand.substring(additionCommand.lastIndexOf("}") + 1).equals(" -c")) {
-				chatType = "private";
+				chatType = ChatType.PRIVATE;
 			} else {
 				return ResponseEntity.badRequest()
 						.body("Ошибка в синтаксисе команды. Введите //help для получения списка комманд.");
 			}
 		} else {
-			chatType = "public";
+			chatType = ChatType.PUBLIC;
 		}
 		ChatCreate modelCreate = new ChatCreate(roomName, currentUserId, chatType);
-		chatService.create(modelCreate);
-		return ResponseEntity.ok("Чат с именем " + roomName + " успешно создан");
+		return chatService.create(modelCreate);
 	}
 
-	public ResponseEntity parseCmdAndConnectToRoom(String additionCommand, Long currentUserId)
+	public ResponseEntity<?> parseCmdAndConnectToRoom(String additionCommand, Long currentUserId)
 			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException {
 		additionCommand = additionCommand.trim();
 		String roomName = "";
@@ -190,6 +203,10 @@ public class ChatBotService {
 			roomName = additionCommand.substring(additionCommand.indexOf("{") + 1, additionCommand.indexOf("}"));
 			// получаем имя пользователя между последним символом { и последним }
 			if (additionCommand.contains("-l {")) {
+				if (CurrentUserStatusCheck.isBanned()) {
+					return ResponseEntity.badRequest()
+							.body("Вы забанены. Вам эта команда недоступна");
+				}
 				userName = additionCommand.substring(additionCommand.lastIndexOf("{") + 1,
 						additionCommand.lastIndexOf("}"));
 			}
@@ -229,13 +246,11 @@ public class ChatBotService {
 
 		PartyCreate modelCreate = new PartyCreate(chatEntity.getChat_id(), userEntity.getUser_id(), PartyStatus.MEMBER,
 				java.sql.Timestamp.valueOf(LocalDateTime.now()));
-		partyService.create(modelCreate);
 
-		return ResponseEntity.ok("Введена команда " + BaseCommand.ROOM_CREATE.getText() + " " + additionCommand
-				+ ". Команда выполнена успешно.");
+		return partyService.create(modelCreate);
 	}
 
-	public ResponseEntity parseCmdAndDisconnectFromRoom(String additionCommand, Long currentUserId)
+	public ResponseEntity<?> parseCmdAndDisconnectFromRoom(String additionCommand, Long currentUserId)
 			throws UsrNotFoundException, ChatNotFoundException, PartyAlreadyExistException, PartyNotFoundException {
 		String roomName = null;
 		String userName = null;
@@ -246,6 +261,10 @@ public class ChatBotService {
 
 			// получаем имя пользователя
 			if (additionCommand.contains("-l {")) {
+				if (CurrentUserStatusCheck.isBanned()) {
+					return ResponseEntity.badRequest()
+							.body("Вы забанены. Вам эта команда недоступна");
+				}
 				String sub = additionCommand.substring(additionCommand.indexOf("-l {") + 4);
 				userName = sub.substring(0, sub.indexOf("}"));
 
@@ -309,16 +328,10 @@ public class ChatBotService {
 
 			if (banTime != null) {
 
-				partyService.banUserByIdAndChatId(userEntity.getUser_id(), chatEntity.getChat_id(), banTime);
+				return partyService.banUserByIdAndChatId(userEntity.getUser_id(), chatEntity.getChat_id(), banTime);
 
-				return ResponseEntity.ok("Готово. Пользователь " + userEntity.getUsername() + " с id="
-						+ userEntity.getUser_id() + " не сможет войти в этот чат " + banTime + " минут");
 			} else {
-
-				partyService.delete(partyEntity.getParty_id());
-
-				return ResponseEntity.ok("Готово. Пользователь " + userEntity.getUsername() + " с id="
-						+ userEntity.getUser_id() + " отключен от чата " + chatEntity.getName());
+				return partyService.delete(partyEntity.getParty_id());
 			}
 		} else {
 			// выход текущего пользователя из комнаты = room disconnect
@@ -331,16 +344,13 @@ public class ChatBotService {
 				throw new PartyNotFoundException(
 						"Пользователь " + userEntity.getUsername() + " в чате " + chatEntity.getName() + " не состоит");
 			} else {
-				partyService.delete(partyEntity.getParty_id());
-
-				return ResponseEntity.ok("Готово. Пользователь " + userEntity.getUsername() + " с id="
-						+ userEntity.getUser_id() + " отключен от чата " + chatEntity.getName());
+				return partyService.delete(partyEntity.getParty_id());
 			}
 
 		}
 	}
 
-	public ResponseEntity parseCmdAndRemoveRoom(String additionCommand, Long currentUserId)
+	public ResponseEntity<?> parseCmdAndRemoveRoom(String additionCommand, Long currentUserId)
 			throws ChatNotFoundException {
 		String roomName = null;
 		try {
@@ -370,11 +380,16 @@ public class ChatBotService {
 		return ResponseEntity.ok("Готово. Чат с именем " + roomName + " удален");
 	}
 
-	public ResponseEntity parseCmdAndRenameRoom(String additionCommand, Long currentUserId)
+	public ResponseEntity<?> parseCmdAndRenameRoom(String additionCommand, Long currentUserId)
 			throws ChatNotFoundException, UsrNotFoundException {
 
 		String roomNameOld = null;
 		String roomNameNew = null;
+
+		if (isBanned(currentUserId)) {
+			return ResponseEntity.badRequest()
+					.body("Вы забанены. Вам эта команда недоступна");
+		}
 
 		try {
 			// получаем имя чата между первым символом { и первым }
@@ -413,11 +428,18 @@ public class ChatBotService {
 			throw new ChatNotFoundException("Чат с именем " + roomNameOld + " не найден");
 		}
 
+		// Проверка является ли текущий пользователь владельцем этого чата или админом
+		if (chatEntity.getUser().getUser_id() != currentUserId) {
+			if (!(CurrentUserRoleCheck.isAdministrator())) {
+				return ResponseEntity.badRequest().body("У вас не хватает прав доступа для этой операции");
+			}
+		}
+
 		chatService.rename(chatEntity.getChat_id(), roomNameNew);
 		return ResponseEntity.ok("Готово. Чат с именем " + roomNameOld + " переименован в " + roomNameNew + ".");
 	}
 
-	public ResponseEntity parseCmdAndUserBan(String additionCommand)
+	public ResponseEntity<?> parseCmdAndUserBan(String additionCommand)
 			throws ChatNotFoundException, UsrNotFoundException {
 
 		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
@@ -455,12 +477,10 @@ public class ChatBotService {
 			throw new UsrNotFoundException("Пользователь с именем " + usrName + " не найден");
 		}
 
-		usrService.ban(usrEntity.getUser_id(), banTime);
-
-		return ResponseEntity.ok("Готово. Пользователь с именем " + usrName + " забанен на " + banTime + " минут(у).");
+		return usrService.ban(usrEntity.getUser_id(), banTime);
 	}
 
-	public ResponseEntity parseCmdAndUserModerator(String additionCommand)
+	public ResponseEntity<?> parseCmdAndUserModerator(String additionCommand)
 			throws ChatNotFoundException, UsrNotFoundException, AccessNotFoundException {
 
 		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
@@ -510,7 +530,7 @@ public class ChatBotService {
 		}
 	}
 
-	public ResponseEntity parseCmdAndUserRename(String additionCommand)
+	public ResponseEntity<?> parseCmdAndUserRename(String additionCommand)
 			throws ChatNotFoundException, UsrNotFoundException, AccessNotFoundException, UsrAlreadyExistException {
 
 		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
@@ -540,13 +560,10 @@ public class ChatBotService {
 		String usrNameOld = args.get(0);
 		String usrNameNew = args.get(1);
 
-		usrService.rename(usrNameOld, usrNameNew);
-
-		return ResponseEntity.ok("Готово. Пользователь с именем " + usrNameOld + " сменил имя на " + usrNameNew);
-
+		return usrService.rename(usrNameOld, usrNameNew);
 	}
 
-	public ResponseEntity yBotFind(String additionCommand) throws Exception {
+	public ResponseEntity<?> yBotFind(String additionCommand) throws Exception {
 		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
 		LinkedList<Integer> rightBracketPos = new LinkedList<Integer>();
 		readBracketPos(additionCommand, leftBracketPos, rightBracketPos);
@@ -628,26 +645,13 @@ public class ChatBotService {
 		}
 
 		return ResponseEntity.ok(result);
-
-//		if (responseVideo.getItems().size() == 0) {
-//			return ResponseEntity.ok("Видео не найдено");
-//		} else {
-//			return ResponseEntity.ok(responseVideo);
-//		}
-
-//		return ResponseEntity.ok(responseVideo);
-
-		// System.out.println(response);
-
-		// return ResponseEntity.ok("Поиск видео с именем: " + videoName + " на канале:
-		// " + channelName);
 	}
 
-	public ResponseEntity cmdHelp() {
-		// LinkedList<String> helpNote = new LinkedList<String>();
+	public ResponseEntity<?> cmdHelp() {
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("Команды:");
+		sb.append("Ваша роль: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+		sb.append("\r\nКоманды: ");
 		sb.append("\r\nКомнаты:");
 		sb.append("\r\n1. //room create {Название комнаты} - создает комнаты; -c закрытая комната. "
 				+ "Только (владелец, модератор и админ) может добавлять/удалять пользователей из комнаты.");
@@ -675,7 +679,7 @@ public class ChatBotService {
 
 	}
 
-	public ResponseEntity cmdYBotHelp() {
+	public ResponseEntity<?> cmdYBotHelp() {
 		// LinkedList<String> helpNote = new LinkedList<String>();
 
 		StringBuilder sb = new StringBuilder();
@@ -746,4 +750,15 @@ public class ChatBotService {
 		}
 	}
 
+	/**
+	 * @param currentUserId
+	 * @return
+	 */
+	public boolean isBanned(Long currentUserId) {
+		UsrEntity usrEntity = usrRepository.findById(currentUserId).orElse(null);
+		if (usrEntity.getStatus().equals(UserStatus.BANNED)) {
+			return true;
+		}
+		return false;
+	}
 }

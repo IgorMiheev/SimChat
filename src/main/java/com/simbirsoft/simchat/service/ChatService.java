@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import com.simbirsoft.simchat.repository.PartyRepository;
 import com.simbirsoft.simchat.repository.UsrRepository;
 import com.simbirsoft.simchat.service.mapping.ChatMapper;
 import com.simbirsoft.simchat.service.mapping.PartyMapper;
+import com.simbirsoft.simchat.service.utils.CurrentUserStatusCheck;
 
 @Service
 public class ChatService {
@@ -42,7 +44,10 @@ public class ChatService {
 	private PartyRepository partyRepository;
 
 	@Transactional
-	public Chat create(ChatCreate modelCreate) throws UsrNotFoundException, ChatAlreadyExistException {
+	public ResponseEntity<?> create(ChatCreate modelCreate) throws UsrNotFoundException, ChatAlreadyExistException {
+		if (CurrentUserStatusCheck.isBanned()) {
+			return ResponseEntity.badRequest().body("Вы забанены. Вам эта команда недоступна");
+		}
 		UsrEntity userEntity = usrRepository.findById(modelCreate.getUser_id()).orElse(null);
 
 		if (userEntity == null) {
@@ -67,7 +72,7 @@ public class ChatService {
 		PartyEntity party = partyMapper.toEntity(partyCreate);
 		partyRepository.save(party);
 
-		return mapper.toModel(entity);
+		return ResponseEntity.ok("Чат с именем " + modelCreate.getName() + " успешно создан");
 	}
 
 	@Transactional(readOnly = true)

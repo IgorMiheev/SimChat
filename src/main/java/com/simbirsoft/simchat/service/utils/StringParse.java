@@ -7,6 +7,7 @@ public class StringParse {
 		}
 
 		try {
+			@SuppressWarnings("unused")
 			Long val = Long.parseLong(s);
 			return true;
 		} catch (NumberFormatException e) {

@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.simbirsoft.simchat.domain.enums.ChatType;
 
 @Entity
 @Table(name = "Chat")
@@ -23,8 +27,10 @@ public class ChatEntity {
 
 	@Column(unique = true, nullable = false)
 	private String name;
+
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String chat_type;
+	private ChatType chat_type;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -36,14 +42,14 @@ public class ChatEntity {
 	@OneToMany(mappedBy = "chat")
 	private List<PartyEntity> partys;
 
-	public ChatEntity(Long chat_id, String name, String chat_type, UsrEntity user) {
+	public ChatEntity(Long chat_id, String name, ChatType chat_type, UsrEntity user) {
 		this.chat_id = chat_id;
 		this.name = name;
 		this.chat_type = chat_type;
 		this.user = user;
 	}
 
-	public void update(String name, String chat_type, UsrEntity user) {
+	public void update(String name, ChatType chat_type, UsrEntity user) {
 		this.name = name;
 		this.chat_type = chat_type;
 		this.user = user;
@@ -76,11 +82,11 @@ public class ChatEntity {
 		this.name = name;
 	}
 
-	public String getChat_type() {
+	public ChatType getChat_type() {
 		return chat_type;
 	}
 
-	public void setChat_type(String chat_type) {
+	public void setChat_type(ChatType chat_type) {
 		this.chat_type = chat_type;
 	}
 

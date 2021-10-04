@@ -2,20 +2,22 @@ package com.simbirsoft.simchat.domain.dto;
 
 import java.sql.Timestamp;
 
+import com.simbirsoft.simchat.domain.enums.UserStatus;
+
 public class Usr {
 	private Long user_id;
 	private String username;
 	private String password;
 	private String email;
-	private Boolean is_banned;
+	private UserStatus status;
 	private Timestamp ban_endtime;
 
-	public Usr(Long user_id, String username, String password, String email, Boolean is_banned, Timestamp ban_endtime) {
+	public Usr(Long user_id, String username, String password, String email, UserStatus status, Timestamp ban_endtime) {
 		this.user_id = user_id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
-		this.is_banned = is_banned;
+		this.status = status;
 		this.ban_endtime = ban_endtime;
 	}
 
@@ -51,12 +53,12 @@ public class Usr {
 		this.email = email;
 	}
 
-	public Boolean getIs_banned() {
-		return is_banned;
+	public UserStatus getStatus() {
+		return status;
 	}
 
-	public void setIs_banned(Boolean is_banned) {
-		this.is_banned = is_banned;
+	public void setStatus(UserStatus status) {
+		this.status = status;
 	}
 
 	public Timestamp getBan_endtime() {

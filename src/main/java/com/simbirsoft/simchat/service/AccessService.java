@@ -3,6 +3,7 @@ package com.simbirsoft.simchat.service;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import com.simbirsoft.simchat.repository.AccessRepository;
 import com.simbirsoft.simchat.repository.RoleRepository;
 import com.simbirsoft.simchat.repository.UsrRepository;
 import com.simbirsoft.simchat.service.mapping.AccessMapper;
+import com.simbirsoft.simchat.service.utils.CurrentUserRoleCheck;
 
 @Service
 public class AccessService {
@@ -112,7 +114,13 @@ public class AccessService {
 	}
 
 	@Transactional
-	public Access setModerator(Long id, Boolean moderator) throws UsrNotFoundException, AccessNotFoundException {
+	public ResponseEntity<?> setModerator(Long id, Boolean moderator)
+			throws UsrNotFoundException, AccessNotFoundException {
+
+		// Проверка является ли текущий пользователь админом
+		if (!(CurrentUserRoleCheck.isAdministrator())) {
+			return ResponseEntity.badRequest().body("У вас не хватает прав доступа для этой операции");
+		}
 
 		RoleEntity moderatorRole = roleRepository.findById(2L).get();
 		RoleEntity defaultUserRole = roleRepository.findById(3L).get();
@@ -133,7 +141,17 @@ public class AccessService {
 		} else {
 			entity.setRole(defaultUserRole);
 		}
+
 		repository.save(entity);
-		return mapper.toModel(entity);
+
+		if (moderator) {
+			return ResponseEntity
+					.ok("Готово. Пользователь с именем " + userEntity.getUsername() + " назначен модератором.");
+		} else {
+			return ResponseEntity
+					.ok("Готово. Пользователь с именем " + userEntity.getUsername() + " больше не модератор.");
+
+		}
+
 	}
 }

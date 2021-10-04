@@ -4,8 +4,11 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,9 +16,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.simbirsoft.simchat.domain.enums.UserStatus;
+
 //used class name "Users" instead "User" because "user" - reserved name in PostgreSQL
 @Entity
 @Table(name = "Users")
+@Cacheable(false)
 public class UsrEntity {
 
 	@Id
@@ -32,7 +38,8 @@ public class UsrEntity {
 	private String email;
 
 	@Column(nullable = false)
-	private Boolean is_banned;
+	@Enumerated(EnumType.STRING)
+	private UserStatus status;
 
 	@Column(nullable = false)
 	private Timestamp ban_endtime;
@@ -52,21 +59,21 @@ public class UsrEntity {
 	public UsrEntity() {
 	}
 
-	public UsrEntity(Long user_id, String username, String password, String email, Boolean is_banned,
+	public UsrEntity(Long user_id, String username, String password, String email, UserStatus status,
 			Timestamp ban_endtime) {
 		this.user_id = user_id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
-		this.is_banned = is_banned;
+		this.status = status;
 		this.ban_endtime = ban_endtime;
 	}
 
-	public void update(String username, String password, String email, Boolean is_banned, Timestamp ban_endtime) {
+	public void update(String username, String password, String email, UserStatus status, Timestamp ban_endtime) {
 		this.username = username;
 		this.password = password;
 		this.email = email;
-		this.is_banned = is_banned;
+		this.status = status;
 		this.ban_endtime = ban_endtime;
 	}
 
@@ -134,12 +141,12 @@ public class UsrEntity {
 		this.email = email;
 	}
 
-	public Boolean getIs_banned() {
-		return is_banned;
+	public UserStatus getStatus() {
+		return status;
 	}
 
-	public void setIs_banned(Boolean is_banned) {
-		this.is_banned = is_banned;
+	public void setStatus(UserStatus status) {
+		this.status = status;
 	}
 
 	public Timestamp getBan_endtime() {
