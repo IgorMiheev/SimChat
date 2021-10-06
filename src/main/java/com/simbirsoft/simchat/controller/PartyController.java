@@ -3,6 +3,7 @@ package com.simbirsoft.simchat.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,7 @@ public class PartyController {
 	private PartyService service;
 
 	@PostMapping // Create
-	public Party createParty(@RequestBody PartyCreate modelCreate)
+	public ResponseEntity<?> createParty(@RequestBody PartyCreate modelCreate)
 			throws UsrNotFoundException, RoleNotFoundException, ChatNotFoundException, PartyAlreadyExistException {
 		return service.create(modelCreate);
 	}
@@ -40,13 +41,13 @@ public class PartyController {
 	}
 
 	@PutMapping(params = "id") // Update
-	public Party updateParty(@RequestParam("id") Long id, @RequestBody PartyCreate modelCreate)
+	public ResponseEntity<?> updateParty(@RequestParam("id") Long id, @RequestBody PartyCreate modelCreate)
 			throws UsrNotFoundException, PartyNotFoundException, ChatNotFoundException {
 		return service.update(id, modelCreate);
 	}
 
 	@DeleteMapping(params = "id") // Delete
-	public String deletePartyById(@RequestParam("id") Long id) throws PartyNotFoundException {
+	public ResponseEntity<?> deletePartyById(@RequestParam("id") Long id) throws PartyNotFoundException {
 		return service.delete(id);
 	}
 
