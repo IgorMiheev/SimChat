@@ -13,18 +13,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Message")
+@Table(name = "MESSAGE")
 public class MessageEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long message_id;
-	@Column(nullable = false)
+
+	@Column(name = "content", nullable = false)
 	private String content;
-	@Column(nullable = false)
+
+	@Column(name = "status", nullable = false)
 	private int status;
 
-	@Column(nullable = false)
+	@Column(name = "create_date", nullable = false)
 	// @CreatedDate
 	private Timestamp create_date;
 

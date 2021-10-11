@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -20,15 +19,14 @@ import com.simbirsoft.simchat.domain.enums.UserStatus;
 
 //used class name "Users" instead "User" because "user" - reserved name in PostgreSQL
 @Entity
-@Table(name = "Users")
-@Cacheable(false)
+@Table(name = "USERS")
 public class UsrEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long user_id;
 
-	@Column(unique = true, nullable = false)
+	@Column(name = "username", unique = true, nullable = false)
 	private String username;
 
 	@Column(nullable = false)

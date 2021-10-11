@@ -18,18 +18,18 @@ import javax.persistence.Table;
 import com.simbirsoft.simchat.domain.enums.ChatType;
 
 @Entity
-@Table(name = "Chat")
+@Table(name = "CHAT")
 public class ChatEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long chat_id;
 
-	@Column(unique = true, nullable = false)
+	@Column(name = "name", unique = true, nullable = false)
 	private String name;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(name = "chat_type", nullable = false)
 	private ChatType chat_type;
 
 	@ManyToOne(fetch = FetchType.LAZY)

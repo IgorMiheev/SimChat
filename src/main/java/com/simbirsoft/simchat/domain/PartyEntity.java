@@ -23,7 +23,7 @@ import com.simbirsoft.simchat.domain.enums.PartyStatus;
  * @author SNAZER
  */
 @Entity
-@Table(name = "Party")
+@Table(name = "PARTY")
 public class PartyEntity {
 
 	@Id
@@ -39,10 +39,10 @@ public class PartyEntity {
 	private ChatEntity chat;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private PartyStatus partyStatus;
+	@Column(name = "party_status", nullable = false)
+	private PartyStatus party_status;
 
-	@Column(nullable = false)
+	@Column(name = "ban_endtime", nullable = false)
 	private Timestamp ban_endtime;
 
 	public PartyEntity() {
@@ -52,14 +52,14 @@ public class PartyEntity {
 		this.party_id = party_id;
 		this.user = user;
 		this.chat = chat;
-		this.partyStatus = status;
+		this.party_status = status;
 		this.ban_endtime = ban_endtime;
 	}
 
 	public void update(UsrEntity user, ChatEntity chat, PartyStatus status, Timestamp ban_endtime) {
 		this.user = user;
 		this.chat = chat;
-		this.partyStatus = status;
+		this.party_status = status;
 		this.ban_endtime = ban_endtime;
 	}
 
@@ -88,11 +88,11 @@ public class PartyEntity {
 	}
 
 	public PartyStatus getStatus() {
-		return partyStatus;
+		return party_status;
 	}
 
 	public void setStatus(PartyStatus status) {
-		this.partyStatus = status;
+		this.party_status = status;
 	}
 
 	public Timestamp getBan_endtime() {

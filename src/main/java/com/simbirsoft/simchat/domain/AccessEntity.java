@@ -19,14 +19,15 @@ import javax.persistence.Table;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Entity
-@Table(name = "AccessTable")
+@Table(name = "ACCESSTABLE")
 public class AccessEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "access_id")
 	private Long access_id;
 
-	@Column(insertable = false, updatable = false, unique = true, nullable = false)
+	@Column(name = "user_id", insertable = false, updatable = false, unique = true, nullable = false)
 	private Long user_id;
 
 	@OneToOne(targetEntity = UsrEntity.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -76,14 +77,6 @@ public class AccessEntity {
 	}
 
 	public Set<SimpleGrantedAuthority> getAuthorities() {
-		// return (Set<SimpleGrantedAuthority>) Arrays.asList(new
-		// SimpleGrantedAuthority(getRole().getName()));
-		/*
-		 * System.out.println(Arrays.toString(Arrays.asList(getRole()).stream()
-		 * .map(roles -> new SimpleGrantedAuthority(roles.getName()))
-		 * .collect(Collectors.toSet())));
-		 */
-		// System.out.println(getRole().getName());
 		return Arrays.asList(getRole()).stream().map(roles -> new SimpleGrantedAuthority(roles.getName()))
 				.collect(Collectors.toSet());
 	}

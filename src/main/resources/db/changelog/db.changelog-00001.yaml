@@ -1,0 +1,305 @@
+databaseChangeLog:
+- changeSet:
+    id: 1633993296043-1
+    author: Igor Miheev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: ACCESSTABLEPK
+            name: access_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: BIGINT
+        - column:
+            name: role_id
+            type: BIGINT
+        tableName: ACCESSTABLE
+- changeSet:
+    id: 1633993296043-2
+    author: Igor Miheev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: CHATPK
+            name: chat_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: chat_type
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: user_id
+            type: BIGINT
+        tableName: CHAT
+- changeSet:
+    id: 1633993296043-3
+    author: Igor Miheev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: MESSAGEPK
+            name: message_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: content
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: create_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: status
+            type: INTEGER
+        - column:
+            name: chat_id
+            type: BIGINT
+        - column:
+            name: user_id
+            type: BIGINT
+        tableName: MESSAGE
+- changeSet:
+    id: 1633993296043-4
+    author: Igor Miheev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: PARTYPK
+            name: party_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: ban_endtime
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: party_status
+            type: VARCHAR(255)
+        - column:
+            name: chat_id
+            type: BIGINT
+        - column:
+            name: user_id
+            type: BIGINT
+        tableName: PARTY
+- changeSet:
+    id: 1633993296043-5
+    author: Igor Miheev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: ROLEPK
+            name: role_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        tableName: ROLE
+- changeSet:
+    id: 1633993296043-6
+    author: Igor Miheev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              primaryKeyName: USERSPK
+            name: user_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: ban_endtime
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: email
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: status
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: username
+            type: VARCHAR(255)
+        tableName: USERS
+- changeSet:
+    id: 1633993296043-7
+    author: Igor Miheev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: user_id
+        constraintName: UC_ACCESSTABLEUSER_ID_COL
+        tableName: ACCESSTABLE
+- changeSet:
+    id: 1633993296043-8
+    author: Igor Miheev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: name
+        constraintName: UC_CHATNAME_COL
+        tableName: CHAT
+- changeSet:
+    id: 1633993296043-9
+    author: Igor Miheev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: name
+        constraintName: UC_ROLENAME_COL
+        tableName: ROLE
+- changeSet:
+    id: 1633993296043-10
+    author: Igor Miheev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: email
+        constraintName: UC_USERSEMAIL_COL
+        tableName: USERS
+- changeSet:
+    id: 1633993296043-11
+    author: Igor Miheev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: username
+        constraintName: UC_USERSUSERNAME_COL
+        tableName: USERS
+- changeSet:
+    id: 1633993296043-12
+    author: Igor Miheev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: ACCESSTABLE
+        constraintName: FK41u9c9mxd0wn7agl5k9xkf1vl
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: user_id
+        referencedTableName: USERS
+        validate: true
+- changeSet:
+    id: 1633993296043-13
+    author: Igor Miheev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: CHAT
+        constraintName: FK92qcvb8o6op9o6fdf7ipl2wgc
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: user_id
+        referencedTableName: USERS
+        validate: true
+- changeSet:
+    id: 1633993296043-14
+    author: Igor Miheev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: chat_id
+        baseTableName: MESSAGE
+        constraintName: FKbft47c6tjejqkptui2hgof5go
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: chat_id
+        referencedTableName: CHAT
+        validate: true
+- changeSet:
+    id: 1633993296043-15
+    author: Igor Miheev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: chat_id
+        baseTableName: PARTY
+        constraintName: FKhj4gpub8lorhesr5hjk594bp
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: chat_id
+        referencedTableName: CHAT
+        validate: true
+- changeSet:
+    id: 1633993296043-16
+    author: Igor Miheev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: PARTY
+        constraintName: FKi0ef8b2w36pplvlk7b81sgerc
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: user_id
+        referencedTableName: USERS
+        validate: true
+- changeSet:
+    id: 1633993296043-17
+    author: Igor Miheev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: MESSAGE
+        constraintName: FKoeqhhuuowh3bgl0m4md2kifg1
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: user_id
+        referencedTableName: USERS
+        validate: true
+- changeSet:
+    id: 1633993296043-18
+    author: Igor Miheev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: role_id
+        baseTableName: ACCESSTABLE
+        constraintName: FKq6au5m2dtpnkdwg0e7vdhske6
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: role_id
+        referencedTableName: ROLE
+        validate: true
+
