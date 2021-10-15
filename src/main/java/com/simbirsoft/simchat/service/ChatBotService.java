@@ -2,8 +2,10 @@ package com.simbirsoft.simchat.service;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
+import com.google.api.services.youtube.model.CommentThread;
+import com.google.api.services.youtube.model.CommentThreadListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
@@ -65,10 +69,19 @@ public class ChatBotService {
 	private PartyRepository partyRepository;
 
 	enum BaseCommand {
-		ROOM_CREATE("//room create"), ROOM_REMOVE("//room remove"), ROOM_RENAME("//room rename"),
-		ROOM_CONNECT("//room connect"), ROOM_DISCONNECT("//room disconnect"), USER_RENAME("//user rename"),
-		USER_BAN("//user ban"), USER_MODERATOR("//user moderator"), YBOT_FIND("//yBot find"), YBOT_HELP("//yBot help"),
-		HELP("//help");
+		ROOM_CREATE("//room create"),
+		ROOM_REMOVE("//room remove"),
+		ROOM_RENAME("//room rename"),
+		ROOM_CONNECT("//room connect"),
+		ROOM_DISCONNECT("//room disconnect"),
+		USER_RENAME("//user rename"),
+		USER_BAN("//user ban"),
+		USER_MODERATOR("//user moderator"),
+		HELP("//help"),
+		YBOT_FIND("//yBot find"),
+		YBOT_HELP("//yBot help"),
+		YBOT_CHANNELINFO("//yBot channelInfo"),
+		YBOT_VIDEOCOMMENTRANDOM("//yBot videoCommentRandom");
 
 		private String text;
 
@@ -145,6 +158,10 @@ public class ChatBotService {
 			return parseCmdAndUserRename(additionCommand);
 		case YBOT_FIND:
 			return yBotFind(additionCommand);
+		case YBOT_CHANNELINFO:
+			return yBotChannelInfo(additionCommand);
+		case YBOT_VIDEOCOMMENTRANDOM:
+			return yBotVideoCommentRandom(additionCommand);
 		case YBOT_HELP:
 			return cmdYBotHelp();
 		case HELP:
@@ -351,7 +368,7 @@ public class ChatBotService {
 	}
 
 	public ResponseEntity<?> parseCmdAndRemoveRoom(String additionCommand, Long currentUserId)
-			throws ChatNotFoundException {
+			throws ChatNotFoundException, UsrNotFoundException {
 		String roomName = null;
 		try {
 			// получаем имя чата между первым символом { и первым }
@@ -452,9 +469,6 @@ public class ChatBotService {
 		if (args.size() != 2) {
 			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
 		}
-		if (args.get(0) == null || args.get(0).equals("")) {
-			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
-		}
 		if (!(StringParse.isLong(args.get(1)))) {
 			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
 		}
@@ -493,9 +507,6 @@ public class ChatBotService {
 		if (args.size() != 1) {
 			return ResponseEntity.badRequest()
 					.body("Неверное количество аргументов. Введите //help для получения списка комманд.");
-		}
-		if (args.get(0) == null || args.get(0).equals("")) {
-			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
 		}
 		if (leftBracketPos.get(0) != 0) {
 			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
@@ -544,12 +555,6 @@ public class ChatBotService {
 			return ResponseEntity.badRequest()
 					.body("Неверное количество аргументов. Введите //help для получения списка комманд.");
 		}
-		if (args.get(0) == null || args.get(0).equals("")) {
-			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
-		}
-		if (args.get(1) == null || args.get(1).equals("")) {
-			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
-		}
 		if (leftBracketPos.get(0) != 0) {
 			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
 		}
@@ -575,12 +580,6 @@ public class ChatBotService {
 			return ResponseEntity.badRequest()
 					.body("Неверное количество аргументов. Введите //help для получения списка комманд.");
 		}
-		if (args.get(0) == null || args.get(0).equals("")) {
-			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
-		}
-		if (args.get(1) == null || args.get(1).equals("")) {
-			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
-		}
 		if (leftBracketPos.get(0) != 0) {
 			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
 		}
@@ -590,7 +589,6 @@ public class ChatBotService {
 
 		String channelName = args.get(0);
 		String videoName = args.get(1);
-		// videoName = "%22" + videoName + "%22";
 
 		YouTube youtubeService = YouTubeApi.getService();
 
@@ -605,7 +603,7 @@ public class ChatBotService {
 		String channelId = response.getItems().get(0).getId();
 
 		YouTube.Search.List requestSearchVideo = youtubeService.search().list("snippet");
-		SearchListResponse responseSearchVideo = requestSearchVideo.setChannelId(channelId).setMaxResults(25L)
+		SearchListResponse responseSearchVideo = requestSearchVideo.setChannelId(channelId).setMaxResults(26L)
 				.setQ(videoName).setKey(YouTubeApi.DEVELOPER_KEY).execute();
 
 		List<String> videoIdsList = new LinkedList<String>();
@@ -647,6 +645,154 @@ public class ChatBotService {
 		return ResponseEntity.ok(result);
 	}
 
+	public ResponseEntity<?> yBotChannelInfo(String additionCommand) throws Exception {
+		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
+		LinkedList<Integer> rightBracketPos = new LinkedList<Integer>();
+		readBracketPos(additionCommand, leftBracketPos, rightBracketPos);
+
+		LinkedList<String> args = new LinkedList<String>();
+		readArgs(additionCommand, args);
+
+		if (args.size() != 1) {
+			return ResponseEntity.badRequest()
+					.body("Неверное количество аргументов. Введите //help для получения списка комманд.");
+		}
+		if (leftBracketPos.get(0) != 0) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+
+		String channelName = args.get(0);
+
+		YouTube youtubeService = YouTubeApi.getService();
+
+		// Define and execute the API request
+		YouTube.Channels.List request = youtubeService.channels().list("snippet");
+		ChannelListResponse response = request.setForUsername(channelName).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		if (response.getPageInfo().getTotalResults() != 1) {
+			return ResponseEntity.ok("Не найдено точного совпадения по имени канала");
+		}
+
+		String channelId = response.getItems().get(0).getId();
+
+		YouTube.Search.List requestSearchVideo = youtubeService.search().list("snippet");
+		SearchListResponse responseSearchVideo = requestSearchVideo
+				.setChannelId(channelId)
+				.setMaxResults(5L)
+				.setOrder("date")
+				.setKey(YouTubeApi.DEVELOPER_KEY)
+				.execute();
+
+		List<String> videoIdsList = new LinkedList<String>();
+		for (SearchResult sr : responseSearchVideo.getItems()) {
+			String videoId = sr.getId().getVideoId();
+			videoIdsList.add(videoId);
+		}
+
+		if (responseSearchVideo.getPageInfo().getTotalResults() == 0) {
+			return ResponseEntity.ok("Видео на канале " + channelName + " не найдено");
+		}
+
+		String videoIdsString = String.join(",", videoIdsList);
+
+		YouTube.Videos.List requestVideo = youtubeService.videos().list("snippet,contentDetails,statistics");
+		VideoListResponse responseVideo = requestVideo.setId(videoIdsString).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		StringBuilder result = new StringBuilder();
+		result.append("Имя канала: " + response.getItems().get(0).getSnippet().getTitle());
+		result.append("\r\nНайдено " + responseSearchVideo.getPageInfo().getTotalResults()
+				+ " видео. Последние 5 видео:");
+
+		for (Video sr : responseVideo.getItems()) {
+			String videoTitle = sr.getSnippet().getTitle();
+			String videoId = sr.getId();
+
+			result.append("\r\n https://www.youtube.com/watch?v=" + videoId);
+			result.append(" " + videoTitle);
+		}
+		return ResponseEntity.ok(result);
+	}
+
+	public ResponseEntity<?> yBotVideoCommentRandom(String additionCommand) throws Exception {
+		LinkedList<Integer> leftBracketPos = new LinkedList<Integer>();
+		LinkedList<Integer> rightBracketPos = new LinkedList<Integer>();
+		readBracketPos(additionCommand, leftBracketPos, rightBracketPos);
+
+		LinkedList<String> args = new LinkedList<String>();
+		readArgs(additionCommand, args);
+
+		if (args.size() != 2) {
+			return ResponseEntity.badRequest()
+					.body("Неверное количество аргументов. Введите //help для получения списка комманд.");
+		}
+		if (leftBracketPos.get(0) != 0) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+		if (!(additionCommand.substring(leftBracketPos.get(1) - 3, leftBracketPos.get(1)).equals("}||"))) {
+			return ResponseEntity.badRequest().body("Ошибка в команде. Введите //help для получения списка комманд.");
+		}
+
+		String channelName = args.get(0);
+		String videoName = args.get(1);
+//		videoName = "%22" + videoName + "%22";
+
+		YouTube youtubeService = YouTubeApi.getService();
+
+		// Define and execute the API request
+		YouTube.Channels.List request = youtubeService.channels().list("id");
+		ChannelListResponse response = request.setForUsername(channelName).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		if (response.getPageInfo().getTotalResults() != 1) {
+			return ResponseEntity.ok("Не найдено точного совпадения по имени канала");
+		}
+
+		String channelId = response.getItems().get(0).getId();
+
+		YouTube.Search.List requestSearchVideo = youtubeService.search().list("snippet");
+		SearchListResponse responseSearchVideo = requestSearchVideo.setChannelId(channelId).setMaxResults(25L)
+				.setQ(videoName).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		String videoId = responseSearchVideo.getItems().get(0).getId().getVideoId();
+
+		YouTube.Videos.List requestVideo = youtubeService.videos().list("snippet,contentDetails,statistics");
+		VideoListResponse responseVideo = requestVideo.setId(videoId).setKey(YouTubeApi.DEVELOPER_KEY).execute();
+
+		BigInteger commentCount = responseVideo.getItems().get(0).getStatistics().getCommentCount();
+
+		if (commentCount.intValue() == 0) {
+			return ResponseEntity.ok("Комментариев не найдено");
+		}
+
+		StringBuilder result = new StringBuilder();
+		YouTube.CommentThreads.List requestCommentThreads = youtubeService.commentThreads().list("snippet");
+
+		String page = null;
+		ArrayList<CommentThread> responseCommentThreadsFull = new ArrayList<CommentThread>();
+		do {
+			CommentThreadListResponse responseCommentThreads = requestCommentThreads.setKey(YouTubeApi.DEVELOPER_KEY)
+					.setVideoId(videoId)
+					.setMaxResults(100L)
+					.setPageToken(page)
+					.execute();
+
+			responseCommentThreadsFull.addAll(responseCommentThreads.getItems());
+			page = responseCommentThreads.getNextPageToken();
+		} while (page != null);
+
+		int randNum = new Random().nextInt(responseCommentThreadsFull.size() - 1);
+
+		result.append("Видео: " + responseVideo.getItems().get(0).getSnippet().getTitle());
+		result.append("\r\nКомментариев всего: " + commentCount.intValue());
+		result.append("\r\nСлучайный комментарий пользователя: "
+				+ responseCommentThreadsFull.get(randNum).getSnippet().getTopLevelComment().getSnippet()
+						.getAuthorDisplayName());
+		result.append("\r\n"
+				+ responseCommentThreadsFull.get(randNum).getSnippet().getTopLevelComment().getSnippet()
+						.getTextOriginal());
+
+		return ResponseEntity.ok(result);
+	}
+
 	public ResponseEntity<?> cmdHelp() {
 
 		StringBuilder sb = new StringBuilder();
@@ -671,7 +817,13 @@ public class ChatBotService {
 		sb.append("\r\nБоты:");
 		sb.append("\r\n1. //yBot find {название канала}||{название видео} - в ответ бот присылает ссылку на ролик; "
 				+ "-v - выводит количество текущих просмотров. -l - выводит количество лайков под видео.");
-		sb.append("\r\n2. //yBot help - список доступных команд для взаимодействия.");
+		sb.append("\r\n2. //yBot channelInfo {название канала} - в ответ бот присылает "
+				+ "имя канала и ссылки на последние 5 роликов");
+		sb.append("\r\n3. //yBot videoCommentRandom {название канала}||{название видео} - - Среди "
+				+ "комментариев к ролику рандомно выбирается 1 - Первым сообщением бот "
+				+ "выводит login человека, который оставил этот комментарий - Вторым "
+				+ "сообщением бот выводит сам комментарий");
+		sb.append("\r\n4. //yBot help - список доступных команд для взаимодействия.");
 		sb.append("\r\nДругие:");
 		sb.append("\r\n1. //help - выводит список доступных команд.");
 
@@ -686,7 +838,13 @@ public class ChatBotService {
 		sb.append("Команды:");
 		sb.append("\r\n1. //yBot find {название канала}||{название видео} - в ответ бот присылает ссылку на ролик; "
 				+ "-v - выводит количество текущих просмотров. -l - выводит количество лайков под видео.");
-		sb.append("\r\n2. //yBot help - список доступных команд для взаимодействия.");
+		sb.append("\r\n2. //yBot channelInfo {название канала} - в ответ бот присылает "
+				+ "имя канала и ссылки на последние 5 роликов");
+		sb.append("\r\n3. //yBot videoCommentRandom {название канала}||{название видео} - - Среди "
+				+ "комментариев к ролику рандомно выбирается 1 - Первым сообщением бот "
+				+ "выводит login человека, который оставил этот комментарий - Вторым "
+				+ "сообщением бот выводит сам комментарий");
+		sb.append("\r\n4. //yBot help - список доступных команд для взаимодействия.");
 
 		return ResponseEntity.ok(sb);
 
@@ -714,6 +872,15 @@ public class ChatBotService {
 				if (rightBracketPos.get(rightBracketPos.size() - 1) != additionCmdString.length() - 1) {
 					return false;
 				}
+			}
+		}
+
+		// проверка на пустые аргументы
+		LinkedList<String> args = new LinkedList<String>();
+		readArgs(additionCmdString, args);
+		for (String arg : args) {
+			if (arg.isEmpty() || arg == null) {
+				return false;
 			}
 		}
 

@@ -1,15 +1,24 @@
 package com.simbirsoft.simchat.service.utils;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.ChannelListResponse;
 
+@Component
 public class YouTubeApi {
 
-	public static final String DEVELOPER_KEY = "AIzaSyCFcVrcD06Lhq3y8kpAVK2BD7-jZjfnq50";
+	public static String DEVELOPER_KEY;
+
+	@Value("${youtube.developerkey}")
+	private void setDeveloperKey(String key) {
+		YouTubeApi.DEVELOPER_KEY = key;
+	}
+
 	// private static final Collection<String> SCOPES =
 	// Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
 
@@ -37,11 +46,11 @@ public class YouTubeApi {
 	 * 
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception {
-		YouTube youtubeService = getService();
-		// Define and execute the API request
-		YouTube.Channels.List request = youtubeService.channels().list("snippet,contentDetails,statistics");
-		ChannelListResponse response = request.setForUsername("GoogleDevelopers").execute();
-		System.out.println(response);
-	}
+//	public static void main(String[] args) throws Exception {
+//		YouTube youtubeService = getService();
+//		// Define and execute the API request
+//		YouTube.Channels.List request = youtubeService.channels().list("snippet,contentDetails,statistics");
+//		ChannelListResponse response = request.setForUsername("GoogleDevelopers").execute();
+//		System.out.println(response);
+//	}
 }

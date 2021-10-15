@@ -32,6 +32,7 @@ public class UsrController {
 		return service.create(modelCreate);
 	}
 
+	@PreAuthorize("hasAnyAuthority('Moderator','Administrator')")
 	@GetMapping(params = "id") // Read
 	public Usr getUsrById(@RequestParam("id") Long id) throws UsrNotFoundException {
 		return service.getById(id);
@@ -63,7 +64,7 @@ public class UsrController {
 
 	@PreAuthorize("hasAnyAuthority('Moderator','Administrator')")
 	@PutMapping(params = { "id", "unban" })
-	public Usr banUsr(@RequestParam("id") Long id) throws UsrNotFoundException {
+	public Usr unbanUsr(@RequestParam("id") Long id) throws UsrNotFoundException {
 		return service.unBan(id);
 	}
 

@@ -9,9 +9,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
+import com.simbirsoft.simchat.security.JwtAutenticationException;
 
 @ControllerAdvice
 public class BaseControllerAdvice {
@@ -36,10 +39,15 @@ public class BaseControllerAdvice {
 		return response(HttpStatus.NOT_FOUND, ex, request);
 	}
 
-	// @ExceptionHandler({ Exception.class })
-//	public Object OtherException(Exception ex, WebRequest request) {
-//		return response(HttpStatus.INTERNAL_SERVER_ERROR, ex, request);
-//	}
+	@ExceptionHandler({ JwtAutenticationException.class, AuthenticationException.class })
+	public Object chatAutenticationException(Exception ex, WebRequest request) {
+		return response(HttpStatus.UNAUTHORIZED, ex, request);
+	}
+
+	@ExceptionHandler({ Exception.class })
+	public Object OtherException(Exception ex, WebRequest request) {
+		return response(HttpStatus.INTERNAL_SERVER_ERROR, ex, request);
+	}
 
 	private Object response(HttpStatus status, Exception ex, WebRequest request) {
 		HttpHeaders headers = new HttpHeaders();

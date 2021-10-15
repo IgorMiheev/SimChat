@@ -4,31 +4,28 @@ import java.sql.Timestamp;
 
 import com.simbirsoft.simchat.domain.enums.MessageStatus;
 
-public class MessageCreate {
+public class MessageSended {
 
-	private Long user_id;
+	private String username;
 	private Long chat_id;
 	private String content;
 	private Timestamp create_date;
 	private MessageStatus status;
 
-	public MessageCreate() {
-	}
-
-	public MessageCreate(Long user_id, Long chat_id, String content, Timestamp create_date, MessageStatus status) {
-		this.user_id = user_id;
+	public MessageSended(String username, Long chat_id, String content, Timestamp create_date, MessageStatus status) {
+		this.username = username;
 		this.chat_id = chat_id;
 		this.content = content;
 		this.create_date = create_date;
 		this.status = status;
 	}
 
-	public Long getUser_id() {
-		return user_id;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUser_id(Long user_id) {
-		this.user_id = user_id;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public Long getChat_id() {

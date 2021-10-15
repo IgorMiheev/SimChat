@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.simbirsoft.simchat.domain.enums.MessageStatus;
 
 @Entity
 @Table(name = "MESSAGE")
@@ -23,8 +27,9 @@ public class MessageEntity {
 	@Column(name = "content", nullable = false)
 	private String content;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
-	private int status;
+	private MessageStatus status;
 
 	@Column(name = "create_date", nullable = false)
 	// @CreatedDate
@@ -41,7 +46,7 @@ public class MessageEntity {
 	public MessageEntity() {
 	}
 
-	public MessageEntity(Long message_id, String content, int status, Timestamp create_date, UsrEntity user,
+	public MessageEntity(Long message_id, String content, MessageStatus status, Timestamp create_date, UsrEntity user,
 			ChatEntity chat) {
 		this.message_id = message_id;
 		this.content = content;
@@ -51,7 +56,7 @@ public class MessageEntity {
 		this.chat = chat;
 	}
 
-	public void update(String content, int status, Timestamp create_date, UsrEntity user, ChatEntity chat) {
+	public void update(String content, MessageStatus status, Timestamp create_date, UsrEntity user, ChatEntity chat) {
 		this.content = content;
 		this.status = status;
 		this.create_date = create_date;
@@ -75,11 +80,11 @@ public class MessageEntity {
 		this.content = content;
 	}
 
-	public int getStatus() {
+	public MessageStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(MessageStatus status) {
 		this.status = status;
 	}
 

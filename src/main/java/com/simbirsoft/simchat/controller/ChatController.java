@@ -41,13 +41,14 @@ public class ChatController {
 	}
 
 	@PutMapping(params = "id") // Update
-	public Chat updateChat(@RequestParam("id") Long id, @RequestBody ChatCreate modelCreate)
+	public ResponseEntity<?> updateChat(@RequestParam("id") Long id, @RequestBody ChatCreate modelCreate)
 			throws UsrNotFoundException, ChatNotFoundException {
 		return service.update(id, modelCreate);
 	}
 
 	@DeleteMapping(params = "id") // Delete
-	public String deleteChatById(@RequestParam("id") Long id) throws ChatNotFoundException {
+	public ResponseEntity<?> deleteChatById(@RequestParam("id") Long id)
+			throws ChatNotFoundException, UsrNotFoundException {
 		return service.delete(id);
 	}
 

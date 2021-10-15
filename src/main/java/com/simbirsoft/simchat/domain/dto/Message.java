@@ -2,6 +2,8 @@ package com.simbirsoft.simchat.domain.dto;
 
 import java.sql.Timestamp;
 
+import com.simbirsoft.simchat.domain.enums.MessageStatus;
+
 public class Message {
 
 	private Long message_id;
@@ -9,9 +11,10 @@ public class Message {
 	private Long chat_id;
 	private String content;
 	private Timestamp create_date;
-	private int status;
+	private MessageStatus status;
 
-	public Message(Long message_id, Long user_id, Long chat_id, String content, Timestamp create_date, int status) {
+	public Message(Long message_id, Long user_id, Long chat_id, String content, Timestamp create_date,
+			MessageStatus status) {
 		this.message_id = message_id;
 		this.user_id = user_id;
 		this.chat_id = chat_id;
@@ -60,11 +63,11 @@ public class Message {
 		this.create_date = create_date;
 	}
 
-	public int getStatus() {
+	public MessageStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(MessageStatus status) {
 		this.status = status;
 	}
 

@@ -122,6 +122,16 @@ public class PartyService {
 			throw new ChatNotFoundException("Чат с таким id не найден");
 		}
 
+		// Проверка является ли текущий пользователь владельцем этого чата или
+		// админом/модератором
+		String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		if (chatEntity.getUser().getUsername() != currentUserName) {
+			if (!(CurrentUserRoleCheck.isAdministrator())) {
+				return ResponseEntity.badRequest().body("У вас не хватает прав доступа для этой операции");
+			}
+		}
+
 		entity = mapper.updateEntity(modelCreate, entity);
 		repository.save(entity);
 		return ResponseEntity.ok(mapper.toModel(entity));
@@ -136,14 +146,12 @@ public class PartyService {
 		}
 
 		// Проверка является ли текущий пользователь выходящим из чата, владельцем чата
-		// или админом/модератором
+		// или админом
 		String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
 		if (entity.getUser().getUsername() != currentUserName) {
 			if (entity.getChat().getUser().getUsername() != currentUserName) {
 				if (!(CurrentUserRoleCheck.isAdministrator())) {
-					if (!(CurrentUserRoleCheck.isModerator())) {
-						return ResponseEntity.badRequest().body("У вас не хватает прав доступа для этой операции");
-					}
+					return ResponseEntity.badRequest().body("У вас не хватает прав доступа для этой операции");
 				}
 			}
 		}
@@ -204,6 +212,20 @@ public class PartyService {
 					+ banTime + " минут");
 		}
 
+	}
+
+	@Transactional
+	public ResponseEntity<?> unbanUserByPartyId(Long party_id) throws PartyNotFoundException {
+		PartyEntity entity = repository.findById(party_id).orElse(null);
+
+		if (entity == null) {
+			throw new PartyNotFoundException("Участник чата с таким id не найден");
+		}
+		entity.setBan_endtime(java.sql.Timestamp.valueOf(LocalDateTime.now()));
+		entity.setStatus(PartyStatus.MEMBER);
+		repository.save(entity);
+
+		return ResponseEntity.ok("Пользователь разбанен в чате");
 	}
 
 }

@@ -1,0 +1,110 @@
+databaseChangeLog:
+ - logicalFilePath: db/changelog/db.changelog-00003.yaml
+ - changeSet:
+      id: 00002-001
+      author: Igor_Miheev
+      comment: "Create users: admin, moder, user"
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: password
+                  value: "$2a$12$DG2t29Nbn33biPXHk93hJeQs7jyy5xPokWa1jTskLqNAfOeInQlRC" #admin
+              - column:
+                  name: email
+                  value: "admin@server.com"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: ban_endtime
+                  value: "1970-01-01 00:00:00"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "moder"
+              - column:
+                  name: password
+                  value: "$2a$12$WXGGyryRb6.LlbrItyosEOO2OI8P1RyCaeGK2oMh6HZrrmjKu9iBG" #moder
+              - column:
+                  name: email
+                  value: "moder@server.com"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: ban_endtime
+                  value: "1970-01-01 00:00:00"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "user"
+              - column:
+                  name: password
+                  value: "$2a$12$uVSZ7KU4NtOb5uKiUnT5SuMtrUJdXpXdiaa0fdJ1xY8wZMLTpvJsO" #user
+              - column:
+                  name: email
+                  value: "user@server.com"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: ban_endtime
+                  value: "1970-01-01 00:00:00"
+      rollback:
+            - delete:
+                tableName: users
+                where: username in ('admin','moder','user')
+ - changeSet:
+      id: 00002-002
+      author: Igor_Miheev
+      comment: "Add access for admin, moder, user"
+      changes:
+        - insert:
+            tableName: accesstable
+            columns:
+              - column:
+                  name: access_id
+                  value: 1
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: role_id
+                  value: 1
+        - insert:
+            tableName: accesstable
+            columns:
+              - column:
+                  name: access_id
+                  value: 2
+              - column:
+                  name: user_id
+                  value: 2
+              - column:
+                  name: role_id
+                  value: 2
+        - insert:
+            tableName: accesstable
+            columns:
+              - column:
+                  name: access_id
+                  value: 3
+              - column:
+                  name: user_id
+                  value: 3
+              - column:
+                  name: role_id
+                  value: 3
+      rollback:
+        - delete:
+            tableName: accesstable
+            where: access_id in (1,2,3)
