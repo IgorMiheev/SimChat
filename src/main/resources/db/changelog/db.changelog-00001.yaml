@@ -76,7 +76,7 @@ databaseChangeLog:
             constraints:
               nullable: false
             name: status
-            type: INTEGER
+            type: VARCHAR(255)
         - column:
             name: chat_id
             type: BIGINT
