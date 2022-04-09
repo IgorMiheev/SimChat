@@ -1,0 +1,38 @@
+databaseChangeLog:
+ - logicalFilePath: db/changelog/db.changelog-00002.yaml
+ - changeSet:
+      id: 00003-001
+      author: Igor_Miheev
+      comment: "Create role"
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: role_id
+                  value: 1
+              - column:
+                  name: name
+                  value: "Administrator"
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: role_id
+                  value: 2
+              - column:
+                  name: name
+                  value: "Moderator"
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: role_id
+                  value: 3
+              - column:
+                  name: name
+                  value: "DefaultUser"
+      rollback:
+        - delete:
+            tableName: role
+            where: role_id in (1,2,3)
